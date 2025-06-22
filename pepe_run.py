@@ -1,5 +1,6 @@
 from tkinter import *
 from PIL import Image,ImageTk   
+import random
 
 windowHeight=600
 windowWidth=800
@@ -10,7 +11,92 @@ playHeight=windowHeight*0.75
 controlHeight=windowHeight*0.19
 controlWidth=windowWidth*0.4
 
-def right():
+
+maxLives=3
+current_lives=maxLives
+
+score=0
+speed=100
+
+def random_x():
+    return random.random()*(playwidth-60)
+
+def game_over():
+
+    pass
+
+def update_lives():
+    
+    global current_lives
+    
+    current_lives-=1
+
+    if current_lives==0:
+        game_over()
+
+    life_text.config(text="🩷"*current_lives)
+
+
+def update_score(s):
+    score_number.config(text=s)
+
+def destroy_collectible(c:Label):
+    c.destroy()
+    window.after(50,spawn_collectible)
+
+def get_collectible():
+    choice=random.choice(collectibles)
+    collectible=Label(playArea,
+                      text=choice.cget("text"),
+                      font=choice.cget("font"),
+                      bg="black",
+                      fg="#CB0AF2")
+    
+    return collectible
+
+def collison(pepe: Label,collectible: Label):
+    px,py=pepe.winfo_x() , pepe.winfo_y()
+    cx,cy=collectible.winfo_x(), collectible.winfo_y()
+
+    if abs(px-cx)<30 and abs(py-cy)<30:
+        destroy_collectible(collectible)
+        return True
+
+    return False
+
+
+def fall_collectible(collectible:Label):
+    if collison(smallpepeLabel,collectible):
+        global score
+        score+=1
+        update_score(score)
+        print("collected")
+        return
+
+    current_y=collectible.winfo_y()
+    if current_y< playArea.winfo_height():
+        collectible.place(y=current_y+5)
+        global speed
+        playArea.after(speed,fall_collectible,collectible)
+    else:
+        destroy_collectible(collectible)
+        update_lives()
+    
+    
+    
+
+def spawn_collectible():
+    collectible:Label=get_collectible()
+    collectible.place(x=random_x(),y=0)
+    fall_collectible(collectible)
+    
+
+    
+
+
+
+
+def right(event=None):
     current=smallpepeLabel.winfo_x()
     if current>=0.85*playwidth:
         print("Pepe cant move more right")
@@ -19,7 +105,7 @@ def right():
     print(f"Pepe moved to right")
     smallpepeLabel.place(x=current+50)
 
-def left():
+def left(event=None):
     current=smallpepeLabel.winfo_x()
     if current<=0.05*playwidth:
         print("Pepe cant move more left")
@@ -29,7 +115,7 @@ def left():
     smallpepeLabel.place(x=current-50)
 
 
-def up():
+def up(event=None):
     current=smallpepeLabel.winfo_y()
     if current<0.05*playHeight:
         print("Pepe cant move more up")
@@ -38,7 +124,7 @@ def up():
     print(f"Pepe moved up")
     smallpepeLabel.place(y=current-30)
 
-def down():
+def down(event=None):
     current=smallpepeLabel.winfo_y()
     if current>0.75*playHeight:
         print("Pepe cant move more down")
@@ -53,20 +139,20 @@ window.title("Pepe Run")
 pepe=PhotoImage(file="assets/pepe.png",height=windowHeight,width=windowWidth)
 
 window.iconphoto(True,pepe)
+window.config(bg="black")
 
-
-backgroundimg=Image.open("assets/background_image.png")
+backgroundimg=Image.open("assets/playareaBG.png")
 resizedBgimg=backgroundimg.resize((windowWidth,windowHeight))
 bgimage=ImageTk.PhotoImage(resizedBgimg)
 bglabel=Label(image=bgimage)
-bglabel.place(x=0,y=0)
+#bglabel.place(x=0,y=0)
 
 #frame for play area
 playArea=Frame(window,width=playwidth,height=playHeight,bd=10,relief=RAISED)
-playArea.place(x=20,y=20)
+playArea.place(x=0,y=20)
 #bg for play area
 rawpabg=Image.open("assets/playareaBG.png")
-resizedpabg=rawpabg.resize((playwidth,playHeight))
+resizedpabg=rawpabg.resize((int(playwidth-25),int(playHeight-25)))
 playAreaBg=ImageTk.PhotoImage(image=resizedpabg)
 playAreaBglabel=Label(playArea,image=playAreaBg)
 playAreaBglabel.place(x=0,y=0)
@@ -98,5 +184,42 @@ leftButton.config(command=left)
 upButton.config(command=up)
 downButton.config(command=down)
 
+#binding the same to keyboard keys
+window.bind("<Left>",left)
+window.bind("<Right>",right)
+window.bind("<Up>",up)
+window.bind("<Down>",down)
+
+
+#labels for collectibles
+c1=Label(playArea,text="🍌",font=("Arial",30),padx=0,pady=0,bg="black",fg="#CB0AF2")
+c2=Label(playArea,text="🍉",font=("Arial",30),padx=0,pady=0,bg="black",fg="#CB0AF2")
+c3=Label(playArea,text="🍊",font=("Arial",30),padx=0,pady=0,bg="black",fg="#CB0AF2")
+c4=Label(playArea,text="🍈",font=("Arial",30),padx=0,pady=0,bg="black",fg="#CB0AF2")
+c5=Label(playArea,text="🍇",font=("Arial",30),padx=0,pady=0,bg="black",fg="#CB0AF2")
+
+collectibles=[c1,c2,c3,c4,c5]
+
+
+#score counter
+
+score_counter=Frame(window,width=200,height=40,bg="black")
+score_counter.place(x=0,y=0)
+score_text=Label(score_counter,text="Score: ",font=("Komika Axis",15,"bold"),bg="black",fg="yellow")
+score_number=Label(score_counter,text="0",font=("Komika Axis",15,"bold"),bg="black",fg="yellow")
+score_text.place(x=0,y=0)
+score_number.place(x=80,y=0)
+
+#life counter
+life_counter=Frame(window,width=100,height=40,bg="black")
+life_counter.place(x=windowWidth-100,y=0)
+life_text=Label(life_counter,text="🩷"*maxLives,font=("Arial",20),bg="black", fg="red")
+life_text.place(x=0,y=0)
+
+
+
+    
+
+spawn_collectible()
 
 window.mainloop()
