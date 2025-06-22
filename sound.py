@@ -22,10 +22,10 @@ def collect_sfx():
 
 def movesound():
     sfx=pygame.mixer.Sound("assets/sounds/move.mp3")
-    sfx.play
+    sfx.play()
 
 def damageSound():
     sfx=pygame.mixer.Sound("assets/sounds/damage.mp3")
-    sfx.play
+    sfx.play()
 
 

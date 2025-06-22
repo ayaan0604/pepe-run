@@ -38,7 +38,8 @@ def game_over():
 def restart():
     
     global game_running,score,current_collectible,current_lives
-    current_collectible.destroy()
+    if current_collectible:
+        current_collectible.destroy()
     score=0
     update_score(score)
     current_lives=maxLives+1
