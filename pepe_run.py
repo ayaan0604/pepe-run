@@ -11,19 +11,44 @@ playHeight=windowHeight*0.75
 controlHeight=windowHeight*0.19
 controlWidth=windowWidth*0.4
 
+game_running=True
+
+current_collectible=None
 
 maxLives=3
 current_lives=maxLives
 
 score=0
-speed=100
+speed=50
 
 def random_x():
     return random.random()*(playwidth-60)
 
 def game_over():
+    global game_running
+    game_running=False
+    show_game_over()
+    score_display.config(text=f"{score}")
+    for btn in [upButton,downButton,leftButton,rightButton]:
+        btn.config(state='disabled')
 
-    pass
+def restart():
+    
+    global game_running,score,current_collectible,current_lives
+    current_collectible.destroy()
+    score=0
+    update_score(score)
+    current_lives=maxLives+1
+    update_lives()
+    game_running=True
+    smallpepeLabel.place(x=random.choice(range(0,int(playwidth))),y=random.choice(range(0,int(playHeight))))
+    hide_game_over()
+    for btn in [upButton,downButton,leftButton,rightButton]:
+        btn.config(state='normal')
+    spawn_collectible()
+
+
+    
 
 def update_lives():
     
@@ -66,11 +91,14 @@ def collison(pepe: Label,collectible: Label):
 
 
 def fall_collectible(collectible:Label):
+    global game_running
+    if not game_running:
+        return
+    
     if collison(smallpepeLabel,collectible):
         global score
         score+=1
         update_score(score)
-        print("collected")
         return
 
     current_y=collectible.winfo_y()
@@ -86,51 +114,53 @@ def fall_collectible(collectible:Label):
     
 
 def spawn_collectible():
-    collectible:Label=get_collectible()
-    collectible.place(x=random_x(),y=0)
-    fall_collectible(collectible)
+    global current_collectible
+    current_collectible=get_collectible()
+    current_collectible.place(x=random_x(),y=0)
+    fall_collectible(current_collectible)
     
+def show_game_over():
+    game_over_frame.lift()
 
-    
-
-
+def hide_game_over():
+    game_over_frame.lower()
 
 
 def right(event=None):
     current=smallpepeLabel.winfo_x()
     if current>=0.85*playwidth:
-        print("Pepe cant move more right")
+        
         return
     smallpepeLabel.config(image=smallPepe_right)
-    print(f"Pepe moved to right")
+    
     smallpepeLabel.place(x=current+50)
 
 def left(event=None):
     current=smallpepeLabel.winfo_x()
     if current<=0.05*playwidth:
-        print("Pepe cant move more left")
+       
         return
     smallpepeLabel.config(image=smallPepe_left)
-    print(f"Pepe moved to left")
+    
     smallpepeLabel.place(x=current-50)
 
 
 def up(event=None):
     current=smallpepeLabel.winfo_y()
     if current<0.05*playHeight:
-        print("Pepe cant move more up")
+        
         return
     
-    print(f"Pepe moved up")
+    
     smallpepeLabel.place(y=current-30)
 
 def down(event=None):
     current=smallpepeLabel.winfo_y()
     if current>0.75*playHeight:
-        print("Pepe cant move more down")
+       
         return
     
-    print(f"Pepe moved down")
+  
     smallpepeLabel.place(y=current+30)
 
 window=Tk()
@@ -217,9 +247,48 @@ life_text=Label(life_counter,text="🩷"*maxLives,font=("Arial",20),bg="black", 
 life_text.place(x=0,y=0)
 
 
+#gameoverscreen
+game_over_frame=Frame(window,width=500,height=300,bd=10,relief=RAISED)
+game_over_frame.place(x=windowWidth/2-250,y=windowHeight/2-200)
+
+gameover_image_raw=Image.open("assets/gameOver.png")
+
+gameover_image_resized=ImageTk.PhotoImage(gameover_image_raw.resize((470,275)))
+
+gameover_popup=Label(game_over_frame,image=gameover_image_resized)
+
+#restart button
+restart_button=Button(game_over_frame,
+                      text="Restart",
+                      bg="#022a14",
+                      fg="#28ed38",
+                      font=("Lucida Console",15,"bold"),
+                      width=15,
+                      height=1,
+                      bd=0,
+                      relief=RAISED)
+
+restart_button.config(command=restart)
+
+
+#score place
+score_display=Label(game_over_frame,text="0",
+                    width=10,
+                    height=1,
+                    font=("Komika Axis",15,"bold"),
+                    bg="#151552",
+                    fg="white"
+                    )
+
+gameover_popup.place(x=0,y=0)
+restart_button.place(x=55,y=210)
+score_display.place(x=100,y=107)
+
+hide_game_over()
+
 
     
+if __name__=="__main__":
+    spawn_collectible()
 
-spawn_collectible()
-
-window.mainloop()
+    window.mainloop()
