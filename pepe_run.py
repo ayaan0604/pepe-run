@@ -1,9 +1,10 @@
 from tkinter import *
 from PIL import Image,ImageTk   
 import random
+from sound import *
 
 windowHeight=600
-windowWidth=800
+windowWidth=900
 
 playwidth=windowWidth*0.95
 playHeight=windowHeight*0.75
@@ -19,18 +20,20 @@ maxLives=3
 current_lives=maxLives
 
 score=0
-speed=50
+speed=100
 
 def random_x():
-    return random.random()*(playwidth-60)
+    return random.random()*(playwidth-100)
 
 def game_over():
+    
     global game_running
     game_running=False
     show_game_over()
     score_display.config(text=f"{score}")
     for btn in [upButton,downButton,leftButton,rightButton]:
         btn.config(state='disabled')
+    play_gameover_music()
 
 def restart():
     
@@ -46,6 +49,7 @@ def restart():
     for btn in [upButton,downButton,leftButton,rightButton]:
         btn.config(state='normal')
     spawn_collectible()
+    restart_bgm()
 
 
     
@@ -85,6 +89,7 @@ def collison(pepe: Label,collectible: Label):
 
     if abs(px-cx)<30 and abs(py-cy)<30:
         destroy_collectible(collectible)
+        
         return True
 
     return False
@@ -99,6 +104,7 @@ def fall_collectible(collectible:Label):
         global score
         score+=1
         update_score(score)
+        collect_sfx()
         return
 
     current_y=collectible.winfo_y()
@@ -109,6 +115,7 @@ def fall_collectible(collectible:Label):
     else:
         destroy_collectible(collectible)
         update_lives()
+        damageSound()
     
     
     
@@ -134,6 +141,7 @@ def right(event=None):
     smallpepeLabel.config(image=smallPepe_right)
     
     smallpepeLabel.place(x=current+50)
+    movesound()
 
 def left(event=None):
     current=smallpepeLabel.winfo_x()
@@ -143,6 +151,7 @@ def left(event=None):
     smallpepeLabel.config(image=smallPepe_left)
     
     smallpepeLabel.place(x=current-50)
+    movesound()
 
 
 def up(event=None):
@@ -153,6 +162,7 @@ def up(event=None):
     
     
     smallpepeLabel.place(y=current-30)
+    movesound()
 
 def down(event=None):
     current=smallpepeLabel.winfo_y()
@@ -162,6 +172,7 @@ def down(event=None):
     
   
     smallpepeLabel.place(y=current+30)
+    movesound()
 
 window=Tk()
 window.geometry(f"{windowWidth}x{windowHeight}")
@@ -289,6 +300,7 @@ hide_game_over()
 
     
 if __name__=="__main__":
+    play_bgm()
     spawn_collectible()
 
     window.mainloop()
