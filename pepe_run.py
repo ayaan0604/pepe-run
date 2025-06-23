@@ -25,6 +25,11 @@ speed=100
 def random_x():
     return random.random()*(playwidth-100)
 
+def update_speed():
+    global speed
+    if speed>=40:
+        speed-=2
+
 def game_over():
     
     global game_running
@@ -35,15 +40,16 @@ def game_over():
         btn.config(state='disabled')
     play_gameover_music()
 
-def restart():
+def restart(event=None):
     
-    global game_running,score,current_collectible,current_lives
+    global game_running,score,current_collectible,current_lives,speed
     if current_collectible:
         current_collectible.destroy()
     score=0
     update_score(score)
     current_lives=maxLives+1
     update_lives()
+    speed=100
     game_running=True
     smallpepeLabel.place(x=random.choice(range(0,int(playwidth))),y=random.choice(range(0,int(playHeight))))
     hide_game_over()
@@ -51,6 +57,7 @@ def restart():
         btn.config(state='normal')
     spawn_collectible()
     restart_bgm()
+
 
 
     
@@ -88,12 +95,10 @@ def collison(pepe: Label,collectible: Label):
     px,py=pepe.winfo_x() , pepe.winfo_y()
     cx,cy=collectible.winfo_x(), collectible.winfo_y()
 
-    if abs(px-cx)<30 and abs(py-cy)<30:
-        destroy_collectible(collectible)
+    return abs(px-cx)<30 and abs(py-cy)<30
         
-        return True
-
-    return False
+        
+        
 
 
 def fall_collectible(collectible:Label):
@@ -102,9 +107,11 @@ def fall_collectible(collectible:Label):
         return
     
     if collison(smallpepeLabel,collectible):
+        destroy_collectible(collectible)
         global score
         score+=1
         update_score(score)
+        update_speed()
         collect_sfx()
         return
 
@@ -272,7 +279,7 @@ gameover_popup=Label(game_over_frame,image=gameover_image_resized)
 #restart button
 restart_button=Button(game_over_frame,
                       text="Restart",
-                      bg="#022a14",
+                      bg="#d6d9d7",
                       fg="#28ed38",
                       font=("Lucida Console",15,"bold"),
                       width=15,
@@ -281,7 +288,7 @@ restart_button=Button(game_over_frame,
                       relief=RAISED)
 
 restart_button.config(command=restart)
-
+game_over_frame.bind("<Return>",restart)
 
 #score place
 score_display=Label(game_over_frame,text="0",
