@@ -1,29 +1,36 @@
-# 🕹️ Pepe Run
+# 🧠🕹️ Pepe Run — Vision Controlled Arcade Game
 
-**Pepe Run** is a retro-style 2D arcade game made with **Tkinter** and **Pygame Mixer**, where you control a cute Pepe and collect falling items while avoiding misses. Earn points, listen to background music, and survive as long as you can!
+**Pepe Run** is a retro-style 2D game where you control the player using **keyboard, buttons, or real-time hand gestures via your camera**.
 
-![Game Screenshot](assets/preview.png)
-
----
-
-## 🎮 Features
-
-- Emoji-based collectibles falling from the top
-- Control Pepe using arrow keys or on-screen buttons
-- Score and life counter
-- Game Over popup with restart functionality
-- Smooth background music and SFX
-- Fully GUI-based with Tkinter
+It combines classic gameplay with **computer vision**, allowing you to move Pepe using gestures like **up, down, left, right** detected live from your webcam.
 
 ---
 
-## 🔧 Requirements
+## 🚀 The Cool Part
 
-- Python 3.7+
-- `pygame`
-- `Pillow` (for image handling)
+- 🎮 Classic arcade gameplay (collect items, avoid misses)
+- 📷 **Live camera feed inside the game UI**
+- ✋ Gesture-based controls using a trained model
+- ⚡ Smooth, low-latency input handling
+- 🔄 Use **keyboard + buttons + camera together**
 
-You can install them easily using:
+---
+
+## 🧪 Tech Stack
+
+- **Python**
+- **Tkinter** (GUI)
+- **OpenCV** (camera + image processing)
+- **YOLO-based (self trained) Model** (gesture detection)
+- **Pillow** (image handling for UI)
+- **Pygame Mixer** (audio)
+
+---
+
+## ▶️ Try It Yourself
 
 ```bash
+git clone https://github.com/ayaan0604/pepe-run
+cd pepe-run
 pip install -r requirements.txt
+python game.py
