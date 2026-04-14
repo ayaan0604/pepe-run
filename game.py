@@ -12,14 +12,14 @@ class Game:
         self.lives = 3
         self.running = True
         
-        self.cam = Camera("../model/saved_model.pt", 0)
+        self.cam = Camera("saved_model.pt", 0)
         self.ui = Ui()
 
         self.current_collectible = None
 
         self.dj = DJ()
 
-        self.cam = Camera("../model/saved_model.pt", 0)
+        self.cam = Camera("saved_model.pt", 0)
 
 
         
