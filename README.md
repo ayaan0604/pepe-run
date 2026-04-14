@@ -27,6 +27,10 @@ It combines classic gameplay with **computer vision**, allowing you to move Pepe
 
 ---
 
+## 🎮 Preview
+
+![Gameplay](assets/new_preview.png)
+
 ## ▶️ Try It Yourself
 
 ```bash
