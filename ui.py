@@ -2,6 +2,8 @@ import random
 from tkinter import *
 from PIL import Image, ImageTk
 from pepe import Pepe
+from cv2 import resize, cvtColor, COLOR_BGR2RGB
+
 
 
 class Screen:
@@ -139,6 +141,43 @@ class Ui:
         self.game_over_frame.lower()
 
 
+    def setup_camera(self):
+        self.camera_frame = Frame(
+            self.window,
+            width=150,
+            height=100,
+            bg="black",
+            bd=3,
+            relief="ridge"
+        )
+        
+        self.camera_frame.place(
+            x=(self.screen.windowWidth - 200)//2,
+            y=10
+        )
+
+        #prevent auto resizing
+        self.camera_frame.pack_propagate(False)
+        self.camera_frame.grid_propagate(False)
+
+        self.camera_label = Label(self.camera_frame, bg="black")
+        self.camera_label.place(x=0, y=0)
+    
+    def update_camera(self, frame):
+        
+        frame = cvtColor(frame, COLOR_BGR2RGB)
+
+        frame = resize(frame, (150, 100))
+
+        img = Image.fromarray(frame)
+
+        img = ImageTk.PhotoImage(image=img)
+
+        
+
+        self.camera_label.imgtk = img
+        self.camera_label.config(image = img)
+
     def setup_ui(self):
         
         self.setup_images()
@@ -149,6 +188,8 @@ class Ui:
         self.setup_score_counter()
 
         self.setup_life_counter()
+
+        self.setup_camera()
 
 
         self.setup_gameover_screen()

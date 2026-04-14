@@ -1,8 +1,9 @@
 from ui import Ui
 from collectibles import Collectible
 import random
-
+from camera import Camera
 from sound import DJ
+
 
 class Game:
     def __init__(self):
@@ -11,11 +12,15 @@ class Game:
         self.lives = 3
         self.running = True
         
+        self.cam = Camera("../model/saved_model.pt", 0)
         self.ui = Ui()
 
         self.current_collectible = None
 
         self.dj = DJ()
+
+        self.cam = Camera("../model/saved_model.pt", 0)
+
 
         
 
@@ -128,6 +133,45 @@ class Game:
             btn.config(state='disabled')
         self.dj.play_gameover_music()
 
+    def handle_camera_inputs(self, labels):
+        if not labels:
+            return
+        
+        if 'up' in labels:
+            self.pepe.up()
+
+        if 'down' in labels:
+            self.pepe.down()
+
+        if 'left' in labels:
+            self.pepe.right()
+
+        if 'right' in labels:
+            self.pepe.left()
+        
+    
+
+    def operate_camera(self):
+        if not self.running:
+            return
+        
+        result = self.cam.read()
+        if result['analyzed']:
+            print(result['labels'])
+            self.handle_camera_inputs(result['labels'])
+            self.ui.update_camera(frame=result['annotated_frame'])
+        
+        else:
+            self.ui.update_camera(frame=result['frame'])
+
+        
+
+
+        
+        
+
+        self.ui.window.after(5, self.operate_camera)
+
     def restart(self,event=None):
         
         
@@ -145,14 +189,20 @@ class Game:
             btn.config(state='normal')
         self.spawn_collectible()
         self.dj.restart_bgm()
+        self.operate_camera()
 
-
+    def exit_game(self):
+        self.cam.release()
+        self.ui.window.destroy()
 
     def setup(self):
         self.ui.setup_ui()
         self.pepe = self.ui.pepe
         self.collectibles = [Collectible(self.ui.playArea, text) for text in ['🍌','🍉','🍊','🍈','🍇']]
         self.bindControls()
+        
+
+        self.ui.window.protocol("WM_DELETE_WINDOW", self.exit_game )
        
         
 
@@ -163,6 +213,7 @@ class Game:
         self.spawn_collectible()
         self.lives = self.pepe.maxLives
         self.dj.play_bgm()
+        self.operate_camera()
         self.ui.window.mainloop()
 
 
