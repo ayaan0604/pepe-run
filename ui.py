@@ -4,6 +4,14 @@ from PIL import Image, ImageTk
 from pepe import Pepe
 from cv2 import resize, cvtColor, COLOR_BGR2RGB
 
+class App(Tk):
+    def __init__(self, width, height, title):
+        super().__init__()
+
+        self.geometry(f"{width}x{height}")
+        self.title(title)
+        
+
 
 
 class Screen:
@@ -24,7 +32,7 @@ class Ui:
 
         self.pepe = None
         
-        self.window = Tk()
+        self.window = App(self.screen.windowWidth, self.screen.windowHeight, "Pepe Run")
 
         
 
@@ -32,8 +40,7 @@ class Ui:
         return int(random.random()*(self.screen.playwidth-100))
     
     def setup_images(self):
-        self.window.geometry(f"{self.screen.windowWidth}x{self.screen.windowHeight}")
-        self.window.title("Pepe Run")
+       
         
         #setup_images()
         pepe=PhotoImage(file="assets/pepe.png",height=self.screen.windowHeight,width=self.screen.windowWidth)
