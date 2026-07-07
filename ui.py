@@ -2,7 +2,7 @@ import random
 from tkinter import *
 from PIL import Image, ImageTk
 from pepe import Pepe
-from cv2 import resize, cvtColor, COLOR_BGR2RGB
+from cv2 import resize, cvtColor, COLOR_BGR2RGB, imread
 
 class ImageLabel(Label):
     def __init__(self,parent,  location, width, height):
@@ -35,6 +35,81 @@ class PlayArea(Frame):
 
         self.backgroundImage.place(x = 0, y = 0)
 
+
+class ControlButtons(Frame):
+    def __init__(self, parent, width, height):
+        super().__init__(parent, width = width, height= height, bg= "black", relief= SUNKEN)
+
+        #button config
+        self.rightButton=Button(self,text="➡️",font=("Arial",15,"bold"),fg="#00CB0A",bg="#241629",relief=RAISED,bd=5)
+        self.leftButton=Button(self,text="⬅️",font=("Arial",15,"bold"),fg="#00CB0A",bg="#241629",relief=RAISED,bd=5)
+        self.upButton=Button(self,text="⬆️",font=("Arial",15,"bold"),fg="#00CB0A",bg="#241629",relief=RAISED,bd=5)
+        self.downButton=Button(self,text="⬇️",font=("Arial",15,"bold"),fg="#00CB0A",bg="#241629",relief=RAISED,bd=5)
+
+        #button placemnet
+        self.upButton.grid(row = 0, column = 1, sticky = "nsew")
+        self.rightButton.grid(row = 1, column = 2, sticky = "nsew")
+        self.leftButton.grid(row = 1, column = 0, sticky = "nsew")
+        
+        self.downButton.grid(row = 1, column = 1, sticky = "nsew")
+        
+class BottomArea(Frame):
+    def __init__(self, parent, width, height):
+        super().__init__(
+            parent,
+            width = width,
+            height= height,
+            bd = 10,
+            relief = SUNKEN,
+            bg = "black"
+        )
+
+        #camera
+        self.cam = Cam(self, width*0.2, height*0.85)
+        self.cam.place(relx = 0, x = 10 , y = 0)
+
+        
+
+        #controls buttons
+        self.controlButtons = ControlButtons(self, width*0.4, height)
+        self.controlButtons.place(relx = 1, x = -10, y = 0, anchor = "ne")
+        
+
+
+
+class Cam(Frame):
+    def __init__(self, parent, width, height):
+
+        super().__init__(
+            parent,
+            width = width,
+            height = height,
+            bg="black",
+            bd=3,
+            relief="ridge"
+        )
+
+        self.imageLabel = Label(self, bg =  "red")
+        self.imageLabel.place(relx= 0, rely= 0, relwidth = 1, relheight=1)
+
+        self.photo = None
+    
+    def update_camera(self, frame):
+
+        w = self.winfo_width()
+        h = self.winfo_height()
+
+        
+        frame = cvtColor(frame, COLOR_BGR2RGB)
+
+        frame = resize(frame, (w, h))
+
+        img = Image.fromarray(frame)
+
+        img = ImageTk.PhotoImage(image=img)
+
+        self.photo = img
+        self.imageLabel.config(image = self.photo)
 
 
 
@@ -88,25 +163,15 @@ class Ui:
         self.pepe= Pepe(self.playArea, self.screen)
         self.pepe.place()
     
-    def setup_buttons(self, control):
-        #button config
-        self.rightButton=Button(control,text="➡️",font=("Arial",15,"bold"),fg="#00CB0A",bg="#241629",relief=RAISED,bd=5)
-        self.leftButton=Button(control,text="⬅️",font=("Arial",15,"bold"),fg="#00CB0A",bg="#241629",relief=RAISED,bd=5)
-        self.upButton=Button(control,text="⬆️",font=("Arial",15,"bold"),fg="#00CB0A",bg="#241629",relief=RAISED,bd=5)
-        self.downButton=Button(control,text="⬇️",font=("Arial",15,"bold"),fg="#00CB0A",bg="#241629",relief=RAISED,bd=5)
+   
+       
 
-        #button placemnet
-        self.rightButton.place(x=self.screen.controlWidth*0.6,y=0.2*self.screen.controlHeight)
-        self.leftButton.place(x=self.screen.controlWidth*0.25,y=0.2*self.screen.controlHeight)
-        self.upButton.place(x=self.screen.controlWidth/2.3,y=0.01*self.screen.controlHeight)
-        self.downButton.place(x=self.screen.controlWidth/2.3,y=0.45*self.screen.controlHeight)
-
-    def setup_control_area(self):
+    def setup_bottom_area(self):
          #frame for control area
-        control=Frame(self.window,width=self.screen.controlWidth,height=self.screen.controlHeight,bd=10,relief=SUNKEN,bg="black")
-        control.place(x=(self.screen.windowWidth/2-self.screen.controlWidth/2),y=self.screen.windowHeight*0.8)
+        self.bottomArea = BottomArea(self.window, self.screen.windowWidth, self.screen.controlHeight)
+        self.bottomArea.place(x=0,y=self.screen.windowHeight - self.screen.controlHeight)
 
-        self.setup_buttons(control)
+        
 
     def setup_score_counter(self):
         score_counter=Frame(self.window,width=200,height=40,bg="black")
@@ -166,55 +231,19 @@ class Ui:
         self.game_over_frame.lower()
 
 
-    def setup_camera(self):
-        self.camera_frame = Frame(
-            self.window,
-            width=150,
-            height=100,
-            bg="black",
-            bd=3,
-            relief="ridge"
-        )
-        
-        self.camera_frame.place(
-            x=(self.screen.windowWidth - 200)//2,
-            y=10
-        )
-
-        #prevent auto resizing
-        self.camera_frame.pack_propagate(False)
-        self.camera_frame.grid_propagate(False)
-
-        self.camera_label = Label(self.camera_frame, bg="black")
-        self.camera_label.place(x=0, y=0)
-    
-    def update_camera(self, frame):
-        
-        frame = cvtColor(frame, COLOR_BGR2RGB)
-
-        frame = resize(frame, (150, 100))
-
-        img = Image.fromarray(frame)
-
-        img = ImageTk.PhotoImage(image=img)
-
-        
-
-        self.camera_label.imgtk = img
-        self.camera_label.config(image = img)
+   
 
     def setup_ui(self):
         
         
         self.setup_play_area()
 
-        self.setup_control_area()
+        self.setup_bottom_area()
 
         self.setup_score_counter()
 
         self.setup_life_counter()
 
-        self.setup_camera()
 
 
         self.setup_gameover_screen()
@@ -236,4 +265,18 @@ class Ui:
 if __name__ == "__main__":
     myui = Ui()
     myui.setup_ui()
+
+   
+    frame = imread("assets/preview.png")
+    print(frame)
+
+    myui.window.after(
+        100,
+        lambda: myui.bottomArea.cam.update_camera(frame)
+    )
+
+    
+
     myui.window.mainloop()
+
+    
