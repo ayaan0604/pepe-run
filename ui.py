@@ -142,6 +142,12 @@ class TopArea(Frame):
 
         self.scoreLabel.place(relx = 0, x= 10, rely = 0)
         self.lifeLabel.place(relx = 1, rely = 0, x = -10, anchor = "ne")
+    
+    def update_score(self, score):
+        self.scoreLabel.config(text = f"Score: {score}")
+    
+    def update_lives(self, count):
+        self.lifeLabel.config(text = "🩷" * count)
 
 
 class GameOverScreen(Frame):
@@ -203,12 +209,12 @@ class GameOverScreen(Frame):
 
         self.lower()
 
-        def show(self, score):
-            self.score_display_place.config(text = f'{score}')
-            self.lift()
-        
-        def hide(self):
-            self.lower()
+    def show(self, score):
+        self.score_display.config(text = f'{score}')
+        self.lift()
+    
+    def hide(self):
+        self.lower()
         
         
 
@@ -267,6 +273,9 @@ class Ui:
         self.bottomArea = BottomArea(self.window, self.screen.windowWidth, self.screen.controlHeight)
         self.bottomArea.grid(row = 2, column = 0)
 
+        #gameover screen
+        self.gameOver = GameOverScreen(self.window, int(self.screen.windowWidth*0.4), int(self.screen.windowHeight*0.8))
+        self.gameOver.place(relx = 0.5, rely = 0.5, anchor = "center")
         
 
     def random_x(self):
@@ -274,36 +283,10 @@ class Ui:
     
    
         
-    
-
-        
-        
-    
-   
-       
-
-        
-
-   
-    def setup_gameover_screen(self):
-        self.gameOver = GameOverScreen(self.window, int(self.screen.windowWidth*0.4), int(self.screen.windowHeight*0.8))
-
-        self.gameOver.place(relx = 0.5, rely = 0.5, anchor = "center")
-        
 
 
    
 
-    def setup_ui(self):
-        
-        
-        
-     
-
-    
-
-
-        self.setup_gameover_screen()
 
 
        
@@ -311,8 +294,10 @@ class Ui:
         
 if __name__ == "__main__":
     myui = Ui()
-    myui.setup_ui()
-
+   
+    myui.topArea.update_lives(4)
+    myui.topArea.update_score(100)
+    
     myui.window.mainloop()
 
     
