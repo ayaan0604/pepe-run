@@ -12,7 +12,7 @@ class Pepe:
         self.playArea = playArea
         self.screen = screen
         self.startX = 0.05*screen.playwidth
-        self.startY = 0.05*screen.playHeight
+        self.startY = 0.95*screen.playHeight
         self.maxLives = 3
 
         self.smallpepeLabel=Label(self.playArea,image=self.smallPepe_right,bd=8,relief=RAISED,padx=10,pady=10,bg="black")

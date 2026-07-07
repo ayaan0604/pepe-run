@@ -52,6 +52,23 @@ class ControlButtons(Frame):
         self.leftButton.grid(row = 1, column = 0, sticky = "nsew")
         
         self.downButton.grid(row = 1, column = 1, sticky = "nsew")
+
+        self.buttons_list = [self.rightButton, self.leftButton, self.upButton, self.downButton]
+    
+    def set_commands(self, left, right, up, down):
+        
+        if left:
+            self.leftButton.config(command = left)
+
+        if right:
+            self.rightButton.config(command = right)
+
+        if up:
+            self.upButton.config(command = up)
+        if down:
+            self.downButton.config(command = down)
+        
+
         
 class BottomArea(Frame):
     def __init__(self, parent, width, height):
@@ -216,6 +233,11 @@ class GameOverScreen(Frame):
     def hide(self):
         self.lower()
         
+    def set_restart(self, command):
+        self.restart_button.config(command = command)
+
+    def set_quit(self, command):
+        self.quitButton.config(command = command)
         
 
             

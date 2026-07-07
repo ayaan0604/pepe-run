@@ -19,16 +19,17 @@ class Game:
 
         self.dj = DJ()
 
-        self.cam = Camera("saved_model.pt", 0)
-
-
         
 
     def bindControls(self):
-        self.ui.rightButton.config(command=self.pepe.right)
-        self.ui.leftButton.config(command=self.pepe.left)
-        self.ui.upButton.config(command=self.pepe.up)
-        self.ui.downButton.config(command=self.pepe.down)
+        self.ui.bottomArea.controlButtons.set_commands(
+            left = self.pepe.left,
+            right= self.pepe.right,
+            up = self.pepe.up,
+            down= self.pepe.down()
+
+        )
+        
 
         #binding the same to keyboard keys
         self.ui.window.bind("<Left>",self.pepe.left)
@@ -37,7 +38,8 @@ class Game:
         self.ui.window.bind("<Down>",self.pepe.down)
 
         #restart button
-        self.ui.restart_button.config(command=self.restart)
+        self.ui.gameOver.set_restart(command=self.restart)
+        self.ui.gameOver.set_quit(command= self.exit_game)
     
     def get_collectible(self):
        
@@ -63,7 +65,7 @@ class Game:
         return abs(px-cx)<30 and abs(py-cy)<30
     
     def update_score(self):
-        self.ui.score_number.config(text=str(self.score))
+        self.ui.topArea.update_score(self.score)
     
     def update_speed(self):
         if self.speed>=40:
@@ -77,7 +79,7 @@ class Game:
             self.game_over()
             
 
-        self.ui.life_text.config(text="🩷"*self.lives)
+        self.ui.topArea.update_lives(self.lives)
 
     def fall_collectible(self):
         
@@ -118,18 +120,18 @@ class Game:
         self.fall_collectible()
 
     def show_game_over(self):
-        self.ui.game_over_frame.lift()
+        self.ui.gameOver.show(self.score)
     
     def hide_game_over(self):
-        self.ui.game_over_frame.lower()
+        self.ui.gameOver.hide()
 
     def game_over(self):
     
         
         self.running=False
-        self.show_game_over()
-        self.ui.score_display.config(text=f"{self.score}")
-        for btn in [self.ui.upButton,self.ui.downButton,self.ui.leftButton,self.ui.rightButton]:
+        self.ui.gameOver.show(self.score)
+       
+        for btn in self.ui.bottomArea.controlButtons.buttons_list:
             btn.config(state='disabled')
         self.dj.play_gameover_music()
 
@@ -152,22 +154,16 @@ class Game:
     
 
     def operate_camera(self):
-        if not self.running:
-            return
+        # if not self.running:
+        #     return
         
         result = self.cam.read()
         if result['analyzed']:
-            print(result['labels'])
             self.handle_camera_inputs(result['labels'])
-            self.ui.update_camera(frame=result['annotated_frame'])
+            self.ui.bottomArea.cam.update_camera(frame=result['annotated_frame'])
         
         else:
-            self.ui.update_camera(frame=result['frame'])
-
-        
-
-
-        
+            self.ui.bottomArea.cam.update_camera(frame=result['frame'])
         
 
         self.ui.window.after(5, self.operate_camera)
@@ -185,7 +181,7 @@ class Game:
         self.running=True
         self.pepe.smallpepeLabel.place(x=random.choice(range(0,int(self.ui.screen.playwidth))),y=random.choice(range(0,int(self.ui.screen.playHeight))))
         self.hide_game_over()
-        for btn in [self.ui.upButton,self.ui.downButton,self.ui.leftButton,self.ui.rightButton]:
+        for btn in self.ui.bottomArea.controlButtons.buttons_list:
             btn.config(state='normal')
         self.spawn_collectible()
         self.dj.restart_bgm()
@@ -196,7 +192,7 @@ class Game:
         self.ui.window.destroy()
 
     def setup(self):
-        self.ui.setup_ui()
+        
         self.pepe = self.ui.pepe
         self.collectibles = [Collectible(self.ui.playArea, text) for text in ['🍌','🍉','🍊','🍈','🍇']]
         self.bindControls()
