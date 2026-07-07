@@ -111,7 +111,39 @@ class Cam(Frame):
         self.photo = img
         self.imageLabel.config(image = self.photo)
 
+class TopArea(Frame):
+    def __init__(self,parent, width, height):
+        super().__init__(
+            parent,
+            width = width,
+            height = height,
+            relief = SUNKEN,
+            bd = 5,
+            bg = "black"
+        )
+        
 
+        self.scoreLabel = Label(
+            self, 
+            text = "Score: 0",
+            bg = "black",
+            fg = "yellow",
+            font = ("Georgia", 15, "bold")
+        )
+
+
+        self.lifeLabel = Label(
+            self, 
+            text = "🥀",
+            bg = "black",
+            fg = "red",
+            font = ("Georgia", 15, "bold")
+        ) 
+
+        self.scoreLabel.place(relx = 0, x= 10, rely = 0)
+        self.lifeLabel.place(relx = 1, rely = 0, x = -10, anchor = "ne")
+
+        
 
 class App(Tk):
     def __init__(self, width, height, title):
@@ -152,6 +184,9 @@ class Ui:
     def random_x(self):
         return int(random.random()*(self.screen.playwidth-100))
     
+    def setup_top_area(self):
+        self.topArea = TopArea(self.window, width = self.screen.windowWidth, height = self.screen.windowHeight*0.07)
+        self.topArea.place(x = 0, y = 0)
 
     
     def setup_play_area(self):
@@ -240,24 +275,12 @@ class Ui:
 
         self.setup_bottom_area()
 
-        self.setup_score_counter()
+       
 
-        self.setup_life_counter()
-
-
+        self.setup_top_area()
 
         self.setup_gameover_screen()
 
-        
-
-        
-    
-       
-
-
-        
-
-       
 
        
 
@@ -265,17 +288,6 @@ class Ui:
 if __name__ == "__main__":
     myui = Ui()
     myui.setup_ui()
-
-   
-    frame = imread("assets/preview.png")
-    print(frame)
-
-    myui.window.after(
-        100,
-        lambda: myui.bottomArea.cam.update_camera(frame)
-    )
-
-    
 
     myui.window.mainloop()
 
