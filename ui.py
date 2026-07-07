@@ -4,12 +4,28 @@ from PIL import Image, ImageTk
 from pepe import Pepe
 from cv2 import resize, cvtColor, COLOR_BGR2RGB
 
+class ImageLabel(Label):
+    def __init__(self,parent,  location, width, height):
+        
+
+        rawImg=Image.open(location)
+        resizedImg= rawImg.resize((width, height))
+        self.img=ImageTk.PhotoImage(resizedImg)
+        
+        super().__init__(parent, image = self.img)
+
+
+
 class App(Tk):
     def __init__(self, width, height, title):
         super().__init__()
 
         self.geometry(f"{width}x{height}")
         self.title(title)
+
+        pepe=PhotoImage(file="assets/pepe.png")
+        self.iconphoto(True,pepe)
+        self.config(bg="black")
         
 
 
@@ -41,17 +57,8 @@ class Ui:
     
     def setup_images(self):
        
-        
         #setup_images()
-        pepe=PhotoImage(file="assets/pepe.png",height=self.screen.windowHeight,width=self.screen.windowWidth)
-
-        self.window.iconphoto(True,pepe)
-        self.window.config(bg="black")
-
-        backgroundimg=Image.open("assets/playareaBG.png")
-        resizedBgimg=backgroundimg.resize((self.screen.windowWidth,self.screen.windowHeight))
-        self.bgimage=ImageTk.PhotoImage(resizedBgimg)
-        self.bglabel=Label(image=self.bgimage)
+        self.bglabel=ImageLabel(self.window, "assets/playareaBG.png", self.screen.windowWidth, self.screen.windowHeight)
         self.bglabel.place(x = 0, y = 0)
     
     def setup_play_area(self):
