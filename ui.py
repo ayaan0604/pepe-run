@@ -22,18 +22,18 @@ class PlayArea(Frame):
             width = width,
             height = height,
             relief = RAISED,
-            bd = 10
+            bd = 4
         )
        
 
         self.backgroundImage = ImageLabel(
             self,
             "assets/playareaBG.png",
-            int(width-25),
-            int(height-25)
+            int(width-12),
+            int(height-12)
         )
 
-        self.backgroundImage.place(x = 0, y = 0)
+        self.backgroundImage.place(relx = 0, rely = 0)
 
 
 class ControlButtons(Frame):
@@ -201,6 +201,8 @@ class GameOverScreen(Frame):
         self.score_display.place(relx=0.19,rely=0.43)
         self.quitButton.place(relx = 0.17, rely = 0.9)
 
+        self.lower()
+
         def show(self, score):
             self.score_display_place.config(text = f'{score}')
             self.lift()
@@ -232,7 +234,7 @@ class Screen:
         self.windowHeight=600
         self.windowWidth=900
 
-        self.playwidth=self.windowWidth*0.95
+        self.playwidth=self.windowWidth
         self.playHeight=self.windowHeight*0.74
 
         self.controlHeight=self.windowHeight*0.19
@@ -249,32 +251,36 @@ class Ui:
         
         self.window = App(self.screen.windowWidth, self.screen.windowHeight, "Pepe Run")
 
+        #setup top bar
+        self.topArea = TopArea(self.window, width = self.screen.windowWidth, height = self.screen.windowHeight*0.07)
+        self.topArea.grid(row = 0, column = 0)
+
+        #setup play Area
+        self.playArea = PlayArea(self.window, self.screen.playwidth, self.screen.playHeight)
+        self.playArea.grid(row = 1, column = 0)
+
+        #setup pepe
+        self.pepe= Pepe(self.playArea, self.screen)
+        self.pepe.place()
+
+        #setup bottom area
+        self.bottomArea = BottomArea(self.window, self.screen.windowWidth, self.screen.controlHeight)
+        self.bottomArea.grid(row = 2, column = 0)
+
         
 
     def random_x(self):
         return int(random.random()*(self.screen.playwidth-100))
     
-    def setup_top_area(self):
-        self.topArea = TopArea(self.window, width = self.screen.windowWidth, height = self.screen.windowHeight*0.07)
-        self.topArea.place(x = 0, y = 0)
-
-    
-    def setup_play_area(self):
+   
         
-        self.playArea = PlayArea(self.window, self.screen.playwidth, self.screen.playHeight)
-        self.playArea.place(x=20,y=20)
+    
 
-        #setup pepe
-        self.pepe= Pepe(self.playArea, self.screen)
-        self.pepe.place()
+        
+        
     
    
        
-
-    def setup_bottom_area(self):
-         #frame for control area
-        self.bottomArea = BottomArea(self.window, self.screen.windowWidth, self.screen.controlHeight)
-        self.bottomArea.place(x=0,y=self.screen.windowHeight - self.screen.controlHeight)
 
         
 
@@ -291,11 +297,10 @@ class Ui:
     def setup_ui(self):
         
         
-        self.setup_top_area()
         
-        self.setup_play_area()
+     
 
-        self.setup_bottom_area()
+    
 
 
         self.setup_gameover_screen()
