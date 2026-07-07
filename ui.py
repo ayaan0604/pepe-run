@@ -14,6 +14,28 @@ class ImageLabel(Label):
         
         super().__init__(parent, image = self.img)
 
+class PlayArea(Frame):
+
+    def __init__(self, parent, width, height):
+        super().__init__(
+            parent,
+            width = width,
+            height = height,
+            relief = RAISED,
+            bd = 10
+        )
+       
+
+        self.backgroundImage = ImageLabel(
+            self,
+            "assets/playareaBG.png",
+            int(width-25),
+            int(height-25)
+        )
+
+        self.backgroundImage.place(x = 0, y = 0)
+
+
 
 
 class App(Tk):
@@ -55,26 +77,15 @@ class Ui:
     def random_x(self):
         return int(random.random()*(self.screen.playwidth-100))
     
-    def setup_images(self):
-       
-        #setup_images()
-        self.bglabel=ImageLabel(self.window, "assets/playareaBG.png", self.screen.windowWidth, self.screen.windowHeight)
-        self.bglabel.place(x = 0, y = 0)
+
     
     def setup_play_area(self):
-        #frame for play area
-        playArea=Frame(self.window,width=self.screen.playwidth,height=self.screen.playHeight,bd=10,relief=RAISED)
-        playArea.place(x=0,y=20)
-        #bg for play area
-        rawpabg=Image.open("assets/playareaBG.png")
-        resizedpabg=rawpabg.resize((int(self.screen.playwidth-25),int(self.screen.playHeight-25)))
-        self.playAreaBg=ImageTk.PhotoImage(image=resizedpabg)
-        playAreaBglabel=Label(playArea,image=self.playAreaBg)
-        playAreaBglabel.place(x=0,y=0)
+        
+        self.playArea = PlayArea(self.window, self.screen.playwidth, self.screen.playHeight)
+        self.playArea.place(x=20,y=20)
 
-        self.playArea = playArea
         #setup pepe
-        self.pepe= Pepe(playArea, self.screen)
+        self.pepe= Pepe(self.playArea, self.screen)
         self.pepe.place()
     
     def setup_buttons(self, control):
@@ -194,7 +205,7 @@ class Ui:
 
     def setup_ui(self):
         
-        self.setup_images()
+        
         self.setup_play_area()
 
         self.setup_control_area()
