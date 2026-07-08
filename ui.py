@@ -190,7 +190,7 @@ class GameOverScreen(Frame):
         
 
         # #restart button
-        self.restart_button=Button(self,
+        self.restartButton=Button(self,
                             text="Restart",
                             bg="#022211",
                             fg="#28ed38",
@@ -216,14 +216,22 @@ class GameOverScreen(Frame):
             text = "Quit",
             bg="#080717",
             fg="#e8e8e8",
-            font=("Lucida Console",12,"bold"),
+            font=("Lucida Console",10,"bold"),
+            bd = 2
+        )
+        self.menuButton = Button(self,
+            text = "Main Menu",
+            bg="#080717",
+            fg="#e8e8e8",
+            font=("Lucida Console",10,"bold"),
             width= int(width * 0.025),
             bd = 2
         )
 
-        self.restart_button.place(relx=0.33, rely=0.805, anchor = "center")
+        self.restartButton.place(relx=0.33, rely=0.805, anchor = "center")
         self.score_display.place(relx=0.19,rely=0.43)
-        self.quitButton.place(relx = 0.17, rely = 0.9)
+        self.menuButton.place(relx = 0.10, rely = 0.89)
+        self.quitButton.place(relx = 0.4, rely = 0.89)
 
         self.lower()
 
@@ -233,12 +241,16 @@ class GameOverScreen(Frame):
     
     def hide(self):
         self.lower()
-        
-    def set_restart(self, command):
-        self.restart_button.config(command = command)
+    
+    def set_button_commands(self, restart = None, menu = None, quit = None):
+        if restart:
+            self.restartButton.config(command= restart)
+        if menu:
+            self.menuButton.config(command= menu)
+        if quit:
+            self.quitButton.config(command= quit)
 
-    def set_quit(self, command):
-        self.quitButton.config(command = command)
+    
         
 
             
@@ -409,12 +421,14 @@ class Ui:
         #gameover screen
         self.gameOver = GameOverScreen(self.window, int(self.screen.windowWidth*0.4), int(self.screen.windowHeight*0.8))
         self.gameOver.place(relx = 0.5, rely = 0.5, anchor = "center")
+        self.gameOver.lower()
 
         self.mainMenu = MainMenu(self.window, int(self.screen.playwidth*0.6), int(self.screen.playHeight*0.9) )
         self.mainMenu.grid(row=1, column=0)
 
         self.helpMenu = HelpMenu(self.window, int(self.screen.playwidth*0.6), int(self.screen.playHeight*0.9))
         self.helpMenu.grid(row=1, column=0)
+        self.helpMenu.lower()
         
 
 
@@ -434,7 +448,7 @@ class Ui:
         
 if __name__ == "__main__":
     myui = Ui()
-   
+    myui.gameOver.show(1)
     
     
     myui.window.mainloop()

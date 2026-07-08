@@ -7,7 +7,7 @@ class Camera:
     def __init__(self, model_path, cam_index=0, interval=0.1):
         self.model = YOLO(model_path)
         self.cap = cv2.VideoCapture(cam_index)
-
+        self.enabled = True
         self.interval = interval
         self.last_infer_time = 0
 

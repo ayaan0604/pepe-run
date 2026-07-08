@@ -13,6 +13,7 @@ class Game:
         self.running = True
         
         self.cam = Camera("saved_model.pt", 0)
+        self.cam.enabled = False
         self.ui = Ui()
 
         self.current_collectible = None
@@ -39,12 +40,18 @@ class Game:
         self.ui.window.bind("<Up>",self.pepe.up)
         self.ui.window.bind("<Down>",self.pepe.down)
 
-        #restart button
-        self.ui.gameOver.set_restart(command=self.restart)
-        self.ui.gameOver.set_quit(command= self.exit_game)
-
+        #gameover
+        self.ui.gameOver.set_button_commands(
+            restart= self.restart,
+            menu= self.show_main_menu,
+            quit= self.exit_game
+        )
+        
         #main menu
-        self.ui.mainMenu.set_button_commands(play=self.restart, quit=self.exit_game)
+        self.ui.mainMenu.set_button_commands(play=self.restart, help= self.show_help_screen, quit=self.exit_game)
+
+        #help menu
+        self.ui.helpMenu.set_button_command(cross= self.hide_help_screen)
     
     def get_collectible(self):
        
@@ -74,7 +81,7 @@ class Game:
     
     def update_speed(self):
         if self.speed>=40:
-            self.speed-=2
+            self.speed-=3
 
     def update_lives(self):
 
@@ -132,11 +139,18 @@ class Game:
 
     def show_main_menu(self):
         self.running = False
+        self.hide_game_over()
         self.ui.mainMenu.show()
         self.dj.stop()
     
     def hide_main_menu(self):
         self.ui.mainMenu.hide()
+    
+    def show_help_screen(self):
+        self.ui.helpMenu.show()
+    
+    def hide_help_screen(self):
+        self.ui.helpMenu.hide()
 
     def game_over(self):
     
@@ -149,6 +163,9 @@ class Game:
         self.dj.play_gameover_music()
 
     def handle_camera_inputs(self, labels):
+        if not self.running:
+            return
+
         if not labels:
             return
         
@@ -169,6 +186,9 @@ class Game:
     def operate_camera(self):
         # if not self.running:
         #     return
+
+        if not self.cam.enabled:
+            return
         
         result = self.cam.read()
         if result['analyzed']:
@@ -181,7 +201,7 @@ class Game:
 
         self.ui.window.after(5, self.operate_camera)
 
-    def restart(self,event=None):
+    def restart(self):
         
         
         if self.current_collectible:
@@ -197,9 +217,10 @@ class Game:
         self.hide_main_menu()
         for btn in self.ui.bottomArea.controlButtons.buttons_list:
             btn.config(state='normal')
-        self.spawn_collectible()
+        
+        self.ui.window.after(100, self.spawn_collectible)
+        self.ui.window.after(500, self.operate_camera)
         self.dj.restart_bgm()
-        self.operate_camera()
 
     def exit_game(self):
         self.cam.release()
