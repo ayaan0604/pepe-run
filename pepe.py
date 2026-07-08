@@ -67,5 +67,5 @@ class Pepe:
     
         self.smallpepeLabel.place(y=current+30)
         self.dj.movesound()
-        
-        
+    
+    

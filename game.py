@@ -237,10 +237,13 @@ class Game:
        
         
 
-
+    def updateVolume(self, value):
+        self.dj.updateVolume(value)
+        self.pepe.dj.updateVolume(value)
 
     def run(self):
         self.setup()
+        self.updateVolume(10)
         self.show_main_menu()
         self.ui.window.after(500, self.operate_camera)
         self.ui.window.mainloop()
