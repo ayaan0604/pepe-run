@@ -22,7 +22,8 @@ class PlayArea(Frame):
             width = width,
             height = height,
             relief = RAISED,
-            bd = 4
+            bd = 4,
+            bg= "black"
         )
        
 
@@ -241,6 +242,77 @@ class GameOverScreen(Frame):
         
 
             
+class MainMenu(Frame):
+    def __init__(self, parent, width, height):
+        super().__init__(master=parent, width=width, height=height, bd = 5, relief=RAISED, bg = "black")
+
+       
+
+        self.background = ImageLabel(self, "assets/main_menu.png", width=width-10, height=height-10)
+        self.background.place(relx = 0.5, rely=0.5, anchor="center")
+
+        self.playButton = Button(self,
+            text = "PLAY",
+            bg="black",
+            fg="#0AAD0A",
+            font=("Lucida Console",14,"bold"),
+            bd = 0
+            
+        )
+
+        self.settingsButton = Button(self,
+            text = "SETTINGS",
+            bg="black",
+            fg="#0d3876",
+            font=("Lucida Console",14,"bold"),
+            bd = 0
+        )
+
+        self.helpButton = Button(self,
+            text = "HELP",
+            bg="black",
+            fg="#0d3876",
+            font=("Lucida Console",13,"bold"),
+            bd = 0
+        )
+
+        self.helpButton = Button(self,
+            text = "HELP",
+            bg="black",
+            fg="#0d3876",
+            font=("Lucida Console",13,"bold"),
+            bd = 0
+        )
+
+        self.quitButton = Button(self,
+            text = "QUIT",
+            bg="black",
+            fg="#0d3876",
+            font=("Lucida Console",13,"bold"),
+            bd = 0
+        )
+
+
+        self.playButton.place(relx=0.55, rely=0.44, anchor="center")
+        self.settingsButton.place(relx=0.55, rely=0.555, anchor="center")
+        self.helpButton.place(relx=0.55, rely=0.67, anchor="center")
+        self.quitButton.place(relx=0.55, rely=0.784, anchor="center")
+
+    def show(self):
+        self.lift()
+    
+    def hide(self):
+        self.lower()
+    
+    def configureButtons(self, play, settings, help, quit):
+        if play:
+            self.playButton.config(command=play)
+        if settings:
+            self.settingsButton.config(command=settings)
+        if help:
+            self.helpButton.config(command=help)
+        if quit:
+            self.quitButton.config(command=quit)
 
 
 class App(Tk):
@@ -298,7 +370,10 @@ class Ui:
         #gameover screen
         self.gameOver = GameOverScreen(self.window, int(self.screen.windowWidth*0.4), int(self.screen.windowHeight*0.8))
         self.gameOver.place(relx = 0.5, rely = 0.5, anchor = "center")
-        
+
+        self.mainMenu = MainMenu(self.window, int(self.screen.playwidth*0.6), int(self.screen.playHeight*0.9) )
+        self.mainMenu.grid(row=1, column=0)
+
 
     def random_x(self):
         return int(random.random()*(self.screen.playwidth-100))
@@ -317,8 +392,7 @@ class Ui:
 if __name__ == "__main__":
     myui = Ui()
    
-    myui.topArea.update_lives(4)
-    myui.topArea.update_score(100)
+    
     
     myui.window.mainloop()
 
