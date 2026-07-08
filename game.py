@@ -13,7 +13,7 @@ class Game:
         self.running = True
         
         self.cam = Camera("saved_model.pt", 0)
-        self.cam.enabled = False
+        self.cam.enabled = True
         self.ui = Ui()
 
         self.current_collectible = None
@@ -118,7 +118,7 @@ class Game:
         else:
             self.destroy_collectible()
             self.update_lives()
-            self.dj.damageSound()
+            self.dj.damagesound()
 
     def spawn_collectible(self):
     
@@ -162,6 +162,8 @@ class Game:
             btn.config(state='disabled')
         self.dj.play_gameover_music()
 
+        self.ui.bottomArea.cam.setText("")
+
     def handle_camera_inputs(self, labels):
         if not self.running:
             return
@@ -169,16 +171,22 @@ class Game:
         if not labels:
             return
         
+        
+        
         if 'up' in labels:
             self.pepe.up()
+            self.ui.bottomArea.cam.setText("up")
 
-        if 'down' in labels:
+        elif 'down' in labels:
             self.pepe.down()
+            self.ui.bottomArea.cam.setText("down")
 
-        if 'left' in labels:
+        elif 'left' in labels:
             self.pepe.right()
+            self.ui.bottomArea.cam.setText("right")
 
-        if 'right' in labels:
+        elif 'right' in labels:
+            self.ui.bottomArea.cam.setText("left")
             self.pepe.left()
         
     
@@ -192,14 +200,19 @@ class Game:
         
         result = self.cam.read()
         if result['analyzed']:
+            
             self.handle_camera_inputs(result['labels'])
             self.ui.bottomArea.cam.update_camera(frame=result['annotated_frame'])
-        
+            
+
+
+            
         else:
             self.ui.bottomArea.cam.update_camera(frame=result['frame'])
-        
+            
+            
 
-        self.ui.window.after(5, self.operate_camera)
+        self.ui.window.after(33, self.operate_camera)
 
     def restart(self):
         
@@ -231,6 +244,7 @@ class Game:
         self.pepe = self.ui.pepe
         self.collectibles = [Collectible(self.ui.playArea, text) for text in ['🍌','🍉','🍊','🍈','🍇']]
         self.bindControls()
+        self.ui.bottomArea.cam.setText("")
         
 
         self.ui.window.protocol("WM_DELETE_WINDOW", self.exit_game )

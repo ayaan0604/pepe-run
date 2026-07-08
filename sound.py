@@ -38,7 +38,7 @@ class DJ:
         self.moveSound.set_volume(self.master_volume)
         self.moveSound.play()
 
-    def damageSound(self):
+    def damagesound(self):
         self.damageSound.set_volume(self.master_volume)
         self.damageSound.play()
     

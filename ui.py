@@ -83,7 +83,7 @@ class BottomArea(Frame):
         )
 
         #camera
-        self.cam = Cam(self, width*0.2, height*0.85)
+        self.cam = Cam(self, width*0.25, height*0.85)
         self.cam.place(relx = 0, x = 10 , y = 0)
 
         
@@ -103,14 +103,25 @@ class Cam(Frame):
             width = width,
             height = height,
             bg="black",
-            bd=3,
-            relief="ridge"
+            
         )
 
-        self.imageLabel = Label(self, bg =  "red")
-        self.imageLabel.place(relx= 0, rely= 0, relwidth = 1, relheight=1)
+        self.imageLabel = Label(self, bg =  "black", bd=3, relief="ridge")
+        self.imageLabel.place(relx= 0, rely= 0, relwidth = 0.7, relheight=1)
+
+        self.textLabel = Label(
+            self,
+            bg="black",
+            fg = "white",
+            text= "Right",
+            bd=3,
+            font=( "Montserrat", 12)
+        )
+        self.textLabel.place( relx = 0.7, rely = 0.7, anchor= "nw")
 
         self.photo = None
+    
+    
     
     def update_camera(self, frame):
 
@@ -128,6 +139,9 @@ class Cam(Frame):
 
         self.photo = img
         self.imageLabel.config(image = self.photo)
+    
+    def setText(self, text):
+        self.textLabel.config(text= text)
 
 class TopArea(Frame):
     def __init__(self,parent, width, height):
@@ -448,7 +462,7 @@ class Ui:
         
 if __name__ == "__main__":
     myui = Ui()
-    myui.gameOver.show(1)
+    
     
     
     myui.window.mainloop()
