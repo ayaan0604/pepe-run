@@ -26,7 +26,7 @@ class Game:
             left = self.pepe.left,
             right= self.pepe.right,
             up = self.pepe.up,
-            down= self.pepe.down()
+            down= self.pepe.down
 
         )
         
