@@ -314,6 +314,45 @@ class MainMenu(Frame):
         if quit:
             self.quitButton.config(command=quit)
 
+class HelpMenu(Frame):
+    def __init__(self, parent, width, height):
+        super().__init__(
+            master=parent,
+            height=height,
+            width=width,
+            bg= "black",
+            relief=SUNKEN
+        )
+
+        self.background = ImageLabel(self, "assets/help_screen.png", height=height+1, width=width+1)
+        self.background.place(relx=0.5, rely=0.5, anchor="center")
+
+        self.crossButton = Button(
+            self,
+            text= "X",
+            fg= "#d0351a",
+            bg = "#050c14",
+            font= ("Lucida Console",16,"bold"),
+            bd = 0,
+            padx=0,
+            pady=0,
+            borderwidth=0,
+            highlightthickness=0
+        )
+
+        self.crossButton.place(relx = 0.925, rely =0.085, anchor="center")
+
+    def set_button_command(self, cross = None):
+        if cross:
+            self.crossButton.config(command= cross)
+
+    def show(self):
+        self.lift()
+    
+    def hide(self):
+        self.lower()
+
+
 
 class App(Tk):
     def __init__(self, width, height, title):
@@ -373,6 +412,10 @@ class Ui:
 
         self.mainMenu = MainMenu(self.window, int(self.screen.playwidth*0.6), int(self.screen.playHeight*0.9) )
         self.mainMenu.grid(row=1, column=0)
+
+        self.helpMenu = HelpMenu(self.window, int(self.screen.playwidth*0.6), int(self.screen.playHeight*0.9))
+        self.helpMenu.grid(row=1, column=0)
+        
 
 
     def random_x(self):
