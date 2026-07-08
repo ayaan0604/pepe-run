@@ -304,7 +304,7 @@ class MainMenu(Frame):
     def hide(self):
         self.lower()
     
-    def configureButtons(self, play, settings, help, quit):
+    def set_button_commands(self, play = None, settings = None, help= None, quit= None):
         if play:
             self.playButton.config(command=play)
         if settings:

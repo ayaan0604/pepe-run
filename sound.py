@@ -32,5 +32,8 @@ class DJ:
     def damageSound(self):
         sfx=self.mixer.Sound("assets/sounds/damage.mp3")
         sfx.play()
+    
+    def stop(self):
+        self.mixer.stop()
 
 

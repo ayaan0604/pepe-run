@@ -22,6 +22,8 @@ class Game:
         
 
     def bindControls(self):
+
+        #ui buttons
         self.ui.bottomArea.controlButtons.set_commands(
             left = self.pepe.left,
             right= self.pepe.right,
@@ -40,6 +42,9 @@ class Game:
         #restart button
         self.ui.gameOver.set_restart(command=self.restart)
         self.ui.gameOver.set_quit(command= self.exit_game)
+
+        #main menu
+        self.ui.mainMenu.set_button_commands(play=self.restart, quit=self.exit_game)
     
     def get_collectible(self):
        
@@ -125,6 +130,14 @@ class Game:
     def hide_game_over(self):
         self.ui.gameOver.hide()
 
+    def show_main_menu(self):
+        self.running = False
+        self.ui.mainMenu.show()
+        self.dj.stop()
+    
+    def hide_main_menu(self):
+        self.ui.mainMenu.hide()
+
     def game_over(self):
     
         
@@ -181,6 +194,7 @@ class Game:
         self.running=True
         self.pepe.smallpepeLabel.place(x=random.choice(range(0,int(self.ui.screen.playwidth))),y=random.choice(range(0,int(self.ui.screen.playHeight))))
         self.hide_game_over()
+        self.hide_main_menu()
         for btn in self.ui.bottomArea.controlButtons.buttons_list:
             btn.config(state='normal')
         self.spawn_collectible()
@@ -206,10 +220,8 @@ class Game:
 
     def run(self):
         self.setup()
-        self.spawn_collectible()
-        self.lives = self.pepe.maxLives
-        self.dj.play_bgm()
-        self.operate_camera()
+        self.show_main_menu()
+        self.ui.window.after(500, self.operate_camera)
         self.ui.window.mainloop()
 
 
