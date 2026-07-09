@@ -265,7 +265,63 @@ class GameOverScreen(Frame):
         if quit:
             self.quitButton.config(command= quit)
 
+class DropDown(Frame):
+    def __init__(self, parent, width, height, options):
+        super().__init__(
+            master= parent,
+            width= width,
+            height= height,
+            bg = "#020810",
+            relief= FLAT,
+        )
+
+        self.optionText = Label(
+            master= self,
+            bg = "#020810",
+            fg = "yellow",
+            font= ("Montserrat", 8, "bold"),
+            anchor="w"
+        )
+        self.optionText.config(text= "Select An Option")
+
+        
+        self.dropDown = None
+        
+
+        self.optionText.place(relx= 0, rely = 0, relwidth=0.9)
+
+            
     
+    def setText(self, text):
+        self.optionText.config(text = text)
+
+    def getSelected(self):
+        return self.selectedOption.get()
+    
+    def createDropdown(self, options):
+
+        if self.dropDown:
+            self.dropDown = None
+        
+        self.selectedOption = StringVar(self)
+        self.selectedOption.set(options[0])
+
+        self.dropdown =  OptionMenu(
+            self,
+            self.selectedOption,
+            *options,
+
+        )
+        self.dropdown.config(
+            bg ="green",
+            fg = "yellow",
+            relief= FLAT,
+            text= "↓"
+        )
+        self.selectedOption.trace_add("write", lambda *args: self.setText(self.selectedOption.get()))
+
+        self.dropdown.place(relx = 0.85, rely = 0, relwidth= 0.15, relheight=0.9)
+
         
 class SettingsMenu(Frame):
     def __init__(self, parent, width, height):
@@ -285,10 +341,13 @@ class SettingsMenu(Frame):
             from_ = 0,
             to = 100,
             orient= "horizontal",
-            length= 340,
-            fg = "#0AAD0A",
-            bg = "#020810",
-            bd = 0
+            length= 345,
+            fg = "#000000",
+            bg = "#0D5C0D",
+            bd = 0,
+            troughcolor= "#020810",
+            highlightbackground= "#0D5C0D",
+            width= 30,
            
         )
         
@@ -304,7 +363,7 @@ class SettingsMenu(Frame):
             self,
             text= "X",
             fg= "#d0351a",
-            bg = "#050c14",
+            bg = "#000912",
             font= ("Lucida Console",16,"bold"),
             bd = 0,
             padx=0,
@@ -314,14 +373,50 @@ class SettingsMenu(Frame):
             command= lambda : self.lower()
         )
 
+        self.enableButton = Button(
+            self,
+            text= "Enable Camera",
+            fg = "#11C911",
+            bg = "#020810",
+            bd = 1,
+            font= ( "Montserrat", 10, "bold"),
+            padx = 20, pady = 0,
+            relief= FLAT
+        )
+
+        self.dropdown = DropDown(
+            self,
+            width= int(width* 0.3),
+            height= int(height* 0.1),
+            options= ["1", "2", "3"]
+        )
+
+        self.backButton = Button(
+            self,
+            text= "Back",
+            fg = "#269926",
+            bg = "#020810",
+            bd = 1,
+            font= ( "Montserrat", 8, "bold"),
+            padx = 20, pady = 0,
+            relief= FLAT,
+            command= lambda: self.lower()
+        )
+    
+
        
 
-        self.volumebar.place(relx = 0.51, rely = 0.275, anchor="center")
+        self.volumebar.place(relx = 0.51, rely = 0.26, anchor="center")
         self.volumebar.set(100)
 
-        self.volumeLabel.place(relx= 0.88, rely= 0.27, anchor= "center")
+        self.volumeLabel.place(relx= 0.89, rely= 0.27, anchor= "center")
 
-        self.crossButton.place(relx = 0.925, rely =0.084, anchor="center")
+        self.crossButton.place(relx = 0.925, rely =0.0835, anchor="center")
+
+        self.enableButton.place(relx = 0.3, rely = 0.535, anchor="center")
+
+        self.dropdown.place(relx = 0.09, rely= 0.68, relheight=0.07, relwidth=0.37)
+        self.backButton.place(relx = 0.45, rely = 0.9)
 
     def show(self):
         self.lift()
@@ -329,9 +424,11 @@ class SettingsMenu(Frame):
     def setVolumeText(self, text):
         self.volumeLabel.config(text = text)
 
-    def setCommands(self, volumeBar = None):
+    def setCommands(self, volumeBar = None, enable = None):
         if volumeBar:
             self.volumebar.config(command= volumeBar)
+    
+    
 
             
 class MainMenu(Frame):
@@ -518,14 +615,6 @@ class Ui:
     def random_x(self):
         return int(random.random()*(self.screen.playwidth-100))
     
-   
-        
-
-
-   
-
-
-
        
 
         
@@ -533,6 +622,7 @@ if __name__ == "__main__":
     myui = Ui()
     
     myui.settingsMenu.lift()
+    myui.settingsMenu.dropdown.createDropdown([1,2,3])
     
     myui.window.mainloop()
 
