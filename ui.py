@@ -3,6 +3,7 @@ from tkinter import *
 from PIL import Image, ImageTk
 from pepe import Pepe
 from cv2 import resize, cvtColor, COLOR_BGR2RGB, imread
+from tkinter import ttk
 
 class ImageLabel(Label):
     def __init__(self,parent,  location, width, height):
@@ -266,6 +267,71 @@ class GameOverScreen(Frame):
 
     
         
+class SettingsMenu(Frame):
+    def __init__(self, parent, width, height):
+        super().__init__(
+            master= parent,
+            width= width,
+            height= height,
+            bd = 0,
+            bg = "black"
+        )
+
+        self.background = ImageLabel(self, "assets/settings.png", width, height+1)
+        self.background.place(relx = 0.5, rely = 0.5, anchor= "center")
+
+        self.volumebar = Scale(
+            self,
+            from_ = 0,
+            to = 100,
+            orient= "horizontal",
+            length= 340,
+            fg = "#0AAD0A",
+            bg = "#020810",
+            bd = 0
+           
+        )
+        
+        self.volumeLabel = Label(
+            self, 
+            fg = "yellow",
+            bg = "#020810",
+            text = "100",
+            font= ("Montserrat", 20, "bold")
+        )
+        
+        self.crossButton = Button(
+            self,
+            text= "X",
+            fg= "#d0351a",
+            bg = "#050c14",
+            font= ("Lucida Console",16,"bold"),
+            bd = 0,
+            padx=0,
+            pady=0,
+            borderwidth=0,
+            highlightthickness=0,
+            command= lambda : self.lower()
+        )
+
+       
+
+        self.volumebar.place(relx = 0.51, rely = 0.275, anchor="center")
+        self.volumebar.set(100)
+
+        self.volumeLabel.place(relx= 0.88, rely= 0.27, anchor= "center")
+
+        self.crossButton.place(relx = 0.925, rely =0.084, anchor="center")
+
+    def show(self):
+        self.lift()
+    
+    def setVolumeText(self, text):
+        self.volumeLabel.config(text = text)
+
+    def setCommands(self, volumeBar = None):
+        if volumeBar:
+            self.volumebar.config(command= volumeBar)
 
             
 class MainMenu(Frame):
@@ -445,6 +511,9 @@ class Ui:
         self.helpMenu.lower()
         
 
+        self.settingsMenu = SettingsMenu(self.window, int(self.screen.playwidth*0.6), int(self.screen.playHeight*0.9))
+        self.settingsMenu.grid(row = 1, column= 0)
+        self.settingsMenu.lower()
 
     def random_x(self):
         return int(random.random()*(self.screen.playwidth-100))
@@ -463,7 +532,7 @@ class Ui:
 if __name__ == "__main__":
     myui = Ui()
     
-    
+    myui.settingsMenu.lift()
     
     myui.window.mainloop()
 

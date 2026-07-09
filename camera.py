@@ -1,6 +1,15 @@
 import cv2
 import time
 from ultralytics import YOLO
+from pygrabber.dshow_graph import FilterGraph
+
+
+def getCameraList():
+
+    graph = FilterGraph()
+    devices = graph.get_input_devices()
+
+    return devices
 
 
 class Camera:
@@ -62,3 +71,7 @@ class Camera:
         self.cap.release()
         cv2.destroyAllWindows()
         cv2.waitKey(1)
+
+
+if __name__ == "__main__":
+   pass

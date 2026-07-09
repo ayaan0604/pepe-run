@@ -48,10 +48,18 @@ class Game:
         )
         
         #main menu
-        self.ui.mainMenu.set_button_commands(play=self.restart, help= self.show_help_screen, quit=self.exit_game)
+        self.ui.mainMenu.set_button_commands(
+            play=self.restart,
+            help= self.show_help_screen,
+            settings= self.show_settings_screen,
+            quit=self.exit_game,                                
+        )
 
         #help menu
         self.ui.helpMenu.set_button_command(cross= self.hide_help_screen)
+
+        #volume bar
+        self.ui.settingsMenu.setCommands(volumeBar= self.operateVolumeBar)
     
     def get_collectible(self):
        
@@ -151,6 +159,15 @@ class Game:
     
     def hide_help_screen(self):
         self.ui.helpMenu.hide()
+    
+    def show_settings_screen(self):
+        self.ui.settingsMenu.show()
+
+    def operateVolumeBar(self, volume):
+        volume = int(volume)
+
+        self.ui.settingsMenu.setVolumeText(volume)
+        self.updateVolume(volume)
 
     def game_over(self):
     
@@ -209,8 +226,6 @@ class Game:
             
         else:
             self.ui.bottomArea.cam.update_camera(frame=result['frame'])
-            
-            
 
         self.ui.window.after(33, self.operate_camera)
 
