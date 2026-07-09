@@ -141,6 +141,13 @@ class Cam(Frame):
         self.photo = img
         self.imageLabel.config(image = self.photo)
     
+    def disableCam(self):
+        self.imageLabel.config(
+            image="",
+            bg = "black",
+            text= "Camera Disabled",
+            fg = "white")
+    
     def setText(self, text):
         self.textLabel.config(text= text)
 
@@ -356,7 +363,8 @@ class SettingsMenu(Frame):
             fg = "yellow",
             bg = "#020810",
             text = "100",
-            font= ("Montserrat", 20, "bold")
+            font= ("Montserrat", 20, "bold"),
+            padx = 10
         )
         
         self.crossButton = Button(
@@ -427,6 +435,11 @@ class SettingsMenu(Frame):
     def setCommands(self, volumeBar = None, enable = None):
         if volumeBar:
             self.volumebar.config(command= volumeBar)
+        if enable:
+            self.enableButton.config(command=enable)
+        
+    def setEnableButtonText(self, text):
+        self.enableButton.config(text= text)
     
     
 

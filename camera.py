@@ -15,7 +15,8 @@ def getCameraList():
 class Camera:
     def __init__(self, model_path, cam_index=0, interval=0.1):
         self.model = YOLO(model_path)
-        self.cap = cv2.VideoCapture(cam_index)
+        self.camindex = cam_index
+        self.cap = None
         self.enabled = True
         self.interval = interval
         self.last_infer_time = 0
@@ -24,6 +25,10 @@ class Camera:
 
     def dont_get_stuck():
         cv2.waitKey(1)
+
+    def startCam(self, ):
+        self.cap = cv2.VideoCapture(self.camindex)
+
 
     def read(self):
         ret, frame = self.cap.read()
@@ -68,7 +73,8 @@ class Camera:
         }
 
     def release(self):
-        self.cap.release()
+        if self.cap:
+            self.cap.release()
         cv2.destroyAllWindows()
         cv2.waitKey(1)
 

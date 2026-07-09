@@ -58,8 +58,11 @@ class Game:
         #help menu
         self.ui.helpMenu.set_button_command(cross= self.hide_help_screen)
 
-        #volume bar
-        self.ui.settingsMenu.setCommands(volumeBar= self.operateVolumeBar)
+        #settings menue
+        self.ui.settingsMenu.setCommands(
+            volumeBar= self.operateVolumeBar,
+            enable= self.toggleCam
+        )
     
     def get_collectible(self):
        
@@ -181,6 +184,24 @@ class Game:
 
         self.ui.bottomArea.cam.setText("")
 
+    def enableCamera(self):
+        self.cam.enabled = True
+        self.cam.startCam()
+        self.ui.settingsMenu.setEnableButtonText("Disable Camera")
+        self.operate_camera()
+
+    def disableCamera(self):
+        self.cam.enabled = False
+        self.ui.settingsMenu.setEnableButtonText("Enable Camera")
+        self.ui.bottomArea.cam.disableCam()
+        self.cam.release()
+
+    def toggleCam(self):
+        if self.cam.enabled:
+            self.disableCamera()
+        else:
+            self.enableCamera()
+
     def handle_camera_inputs(self, labels):
         if not self.running:
             return
@@ -261,6 +282,7 @@ class Game:
         self.bindControls()
         self.ui.bottomArea.cam.setText("")
         
+        self.toggleCam()
 
         self.ui.window.protocol("WM_DELETE_WINDOW", self.exit_game )
        
