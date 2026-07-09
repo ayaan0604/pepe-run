@@ -6,7 +6,16 @@ class DJ:
     def __init__(self):
         pygame.mixer.init()
         self.mixer = pygame.mixer
-        self.mixer.music.set_volume(0.5)
+
+        self.master_volume = 0.5
+
+        self.mixer.music.set_volume(self.master_volume)
+
+        self.collectSound = self.mixer.Sound("assets/sounds/collect.mp3")
+        self.moveSound = self.mixer.Sound("assets/sounds/move.mp3")
+        self.damageSound = self.mixer.Sound("assets/sounds/damage.mp3")
+
+
 
     def play_bgm(self):
         self.mixer.music.load("assets/sounds/game_bgm.mp3")
@@ -22,15 +31,22 @@ class DJ:
         self.play_bgm()
 
     def collect_sfx(self):
-        sfx=self.mixer.Sound("assets/sounds/collect.mp3")
-        sfx.play()
+        self.collectSound.set_volume(self.master_volume)
+        self.collectSound.play()
 
     def movesound(self):
-        sfx=self.mixer.Sound("assets/sounds/move.mp3")
-        sfx.play()
+        self.moveSound.set_volume(self.master_volume)
+        self.moveSound.play()
 
-    def damageSound(self):
-        sfx=self.mixer.Sound("assets/sounds/damage.mp3")
-        sfx.play()
+    def damagesound(self):
+        self.damageSound.set_volume(self.master_volume)
+        self.damageSound.play()
+    
+    def stop(self):
+        self.mixer.stop()
 
+    def updateVolume(self, value):
+        value = float(value)/100
+        self.master_volume = value
+        self.mixer.music.set_volume(value)
 

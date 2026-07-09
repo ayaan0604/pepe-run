@@ -15,6 +15,7 @@ class Game:
         self.running = True
         
         self.cam = Camera("saved_model.pt", 0)
+        self.cam.enabled = True
         self.ui = Ui()
         self.savesManager = SavesManager()
 
@@ -25,6 +26,8 @@ class Game:
         
 
     def bindControls(self):
+
+        #ui buttons
         self.ui.bottomArea.controlButtons.set_commands(
             left = self.pepe.left,
             right= self.pepe.right,
@@ -40,9 +43,29 @@ class Game:
         self.ui.window.bind("<Up>",self.pepe.up)
         self.ui.window.bind("<Down>",self.pepe.down)
 
-        #restart button
-        self.ui.gameOver.set_restart(command=self.restart)
-        self.ui.gameOver.set_quit(command= self.exit_game)
+        #gameover
+        self.ui.gameOver.set_button_commands(
+            restart= self.restart,
+            menu= self.show_main_menu,
+            quit= self.exit_game
+        )
+        
+        #main menu
+        self.ui.mainMenu.set_button_commands(
+            play=self.restart,
+            help= self.show_help_screen,
+            settings= self.show_settings_screen,
+            quit=self.exit_game,                                
+        )
+
+        #help menu
+        self.ui.helpMenu.set_button_command(cross= self.hide_help_screen)
+
+        #settings menue
+        self.ui.settingsMenu.setCommands(
+            volumeBar= self.operateVolumeBar,
+            enable= self.toggleCam
+        )
     
     def get_collectible(self):
        
@@ -72,7 +95,7 @@ class Game:
     
     def update_speed(self):
         if self.speed>=40:
-            self.speed-=2
+            self.speed-=3
 
     def update_lives(self):
 
@@ -114,7 +137,7 @@ class Game:
         else:
             self.destroy_collectible()
             self.update_lives()
-            self.dj.damageSound()
+            self.dj.damagesound()
 
     def spawn_collectible(self):
     
@@ -133,6 +156,30 @@ class Game:
     def hide_game_over(self):
         self.ui.gameOver.hide()
 
+    def show_main_menu(self):
+        self.running = False
+        self.hide_game_over()
+        self.ui.mainMenu.show()
+        self.dj.stop()
+    
+    def hide_main_menu(self):
+        self.ui.mainMenu.hide()
+    
+    def show_help_screen(self):
+        self.ui.helpMenu.show()
+    
+    def hide_help_screen(self):
+        self.ui.helpMenu.hide()
+    
+    def show_settings_screen(self):
+        self.ui.settingsMenu.show()
+
+    def operateVolumeBar(self, volume):
+        volume = int(volume)
+
+        self.ui.settingsMenu.setVolumeText(volume)
+        self.updateVolume(volume)
+
     def game_over(self):
     
         
@@ -146,20 +193,57 @@ class Game:
         if self.score > self.highScore:
             self.updateHighScore(self.score)
 
+        self.ui.bottomArea.cam.setText("")
+
+    def setSelectedCamera(self):
+        cameraName = self.ui.settingsMenu.dropdown.getSelected()
+        self.cam.setCamIndex(cameraName)
+
+
+    def enableCamera(self):
+        self.cam.enabled = True
+        self.setSelectedCamera()
+        self.cam.startCam()
+        self.ui.settingsMenu.setEnableButtonText("Disable Camera")
+        self.ui.settingsMenu.dropdown.disableDropDown()
+        self.operate_camera()
+
+    def disableCamera(self):
+        self.cam.enabled = False
+        self.ui.settingsMenu.setEnableButtonText("Enable Camera")
+        self.ui.settingsMenu.dropdown.enableDropDown()
+        self.ui.bottomArea.cam.disableCam()
+        self.cam.release()
+
+    def toggleCam(self):
+        if self.cam.enabled:
+            self.disableCamera()
+        else:
+            self.enableCamera()
+
     def handle_camera_inputs(self, labels):
+        if not self.running:
+            return
+
         if not labels:
             return
         
+        
+        
         if 'up' in labels:
             self.pepe.up()
+            self.ui.bottomArea.cam.setText("up")
 
-        if 'down' in labels:
+        elif 'down' in labels:
             self.pepe.down()
+            self.ui.bottomArea.cam.setText("down")
 
-        if 'left' in labels:
+        elif 'left' in labels:
             self.pepe.right()
+            self.ui.bottomArea.cam.setText("right")
 
-        if 'right' in labels:
+        elif 'right' in labels:
+            self.ui.bottomArea.cam.setText("left")
             self.pepe.left()
         
     
@@ -167,19 +251,30 @@ class Game:
     def operate_camera(self):
         # if not self.running:
         #     return
+
+        if not self.cam.enabled:
+            return
         
         result = self.cam.read()
+        if not result:
+            self.ui.bottomArea.cam.imageLabel.config(text="Camera error\nPlease try any other camera")
+            return
+        
+
         if result['analyzed']:
+            
             self.handle_camera_inputs(result['labels'])
             self.ui.bottomArea.cam.update_camera(frame=result['annotated_frame'])
-        
+            
+
+
+            
         else:
             self.ui.bottomArea.cam.update_camera(frame=result['frame'])
-        
 
-        self.ui.window.after(5, self.operate_camera)
+        self.ui.window.after(33, self.operate_camera)
 
-    def restart(self,event=None):
+    def restart(self):
         
         
         if self.current_collectible:
@@ -192,11 +287,13 @@ class Game:
         self.running=True
         self.pepe.smallpepeLabel.place(x=random.choice(range(0,int(self.ui.screen.playwidth))),y=random.choice(range(0,int(self.ui.screen.playHeight))))
         self.hide_game_over()
+        self.hide_main_menu()
         for btn in self.ui.bottomArea.controlButtons.buttons_list:
             btn.config(state='normal')
-        self.spawn_collectible()
+        
+        self.ui.window.after(100, self.spawn_collectible)
+        self.ui.window.after(500, self.operate_camera)
         self.dj.restart_bgm()
-        self.operate_camera()
 
     def exit_game(self):
         self.savesManager.updateHighScore(self.highScore)
@@ -208,22 +305,26 @@ class Game:
         self.pepe = self.ui.pepe
         self.collectibles = [Collectible(self.ui.playArea, text) for text in ['🍌','🍉','🍊','🍈','🍇']]
         self.bindControls()
+        self.ui.bottomArea.cam.setText("")
         
         self.highScore = self.savesManager.getHighScore()
         self.updateHighScore(self.highScore)
+        self.toggleCam()
+        self.ui.settingsMenu.dropdown.createDropdown(self.cam.cameraList)
 
         self.ui.window.protocol("WM_DELETE_WINDOW", self.exit_game )
        
         
 
-
+    def updateVolume(self, value):
+        self.dj.updateVolume(value)
+        self.pepe.dj.updateVolume(value)
 
     def run(self):
         self.setup()
-        self.spawn_collectible()
-        self.lives = self.pepe.maxLives
-        self.dj.play_bgm()
-        self.operate_camera()
+        self.updateVolume(10)
+        self.show_main_menu()
+        self.ui.window.after(500, self.operate_camera)
         self.ui.window.mainloop()
 
 
