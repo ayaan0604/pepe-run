@@ -184,15 +184,23 @@ class Game:
 
         self.ui.bottomArea.cam.setText("")
 
+    def setSelectedCamera(self):
+        cameraName = self.ui.settingsMenu.dropdown.getSelected()
+        self.cam.setCamIndex(cameraName)
+
+
     def enableCamera(self):
         self.cam.enabled = True
+        self.setSelectedCamera()
         self.cam.startCam()
         self.ui.settingsMenu.setEnableButtonText("Disable Camera")
+        self.ui.settingsMenu.dropdown.disableDropDown()
         self.operate_camera()
 
     def disableCamera(self):
         self.cam.enabled = False
         self.ui.settingsMenu.setEnableButtonText("Enable Camera")
+        self.ui.settingsMenu.dropdown.enableDropDown()
         self.ui.bottomArea.cam.disableCam()
         self.cam.release()
 
@@ -237,6 +245,11 @@ class Game:
             return
         
         result = self.cam.read()
+        if not result:
+            self.ui.bottomArea.cam.imageLabel.config(text="Camera error\nPlease try any other camera")
+            return
+        
+
         if result['analyzed']:
             
             self.handle_camera_inputs(result['labels'])
@@ -283,6 +296,7 @@ class Game:
         self.ui.bottomArea.cam.setText("")
         
         self.toggleCam()
+        self.ui.settingsMenu.dropdown.createDropdown(self.cam.cameraList)
 
         self.ui.window.protocol("WM_DELETE_WINDOW", self.exit_game )
        

@@ -321,13 +321,26 @@ class DropDown(Frame):
         )
         self.dropdown.config(
             bg ="green",
-            fg = "yellow",
+            fg = "green",
             relief= FLAT,
             text= "↓"
         )
         self.selectedOption.trace_add("write", lambda *args: self.setText(self.selectedOption.get()))
 
         self.dropdown.place(relx = 0.85, rely = 0, relwidth= 0.15, relheight=0.9)
+    
+    def disableDropDown(self):
+        if self.dropDown:
+            self.dropDown.config(state = DISABLED)
+        self.optionText.config(fg = "grey")
+            
+
+    def enableDropDown(self):
+        if self.dropDown:
+            self.dropDown.config(state = NORMAL)
+            
+        self.optionText.config(fg = "yellow")
+
 
         
 class SettingsMenu(Frame):
@@ -412,13 +425,11 @@ class SettingsMenu(Frame):
         )
     
 
-       
-
+    
         self.volumebar.place(relx = 0.51, rely = 0.26, anchor="center")
         self.volumebar.set(100)
 
         self.volumeLabel.place(relx= 0.89, rely= 0.27, anchor= "center")
-
         self.crossButton.place(relx = 0.925, rely =0.0835, anchor="center")
 
         self.enableButton.place(relx = 0.3, rely = 0.535, anchor="center")
@@ -609,8 +620,8 @@ class Ui:
         self.bottomArea.grid(row = 2, column = 0)
 
         #gameover screen
-        self.gameOver = GameOverScreen(self.window, int(self.screen.windowWidth*0.4), int(self.screen.windowHeight*0.8))
-        self.gameOver.place(relx = 0.5, rely = 0.5, anchor = "center")
+        self.gameOver = GameOverScreen(self.window, int(self.screen.windowWidth*0.4), int(self.screen.playHeight*0.9))
+        self.gameOver.grid(row = 1, column= 0)
         self.gameOver.lower()
 
         self.mainMenu = MainMenu(self.window, int(self.screen.playwidth*0.6), int(self.screen.playHeight*0.9) )
@@ -634,8 +645,7 @@ class Ui:
 if __name__ == "__main__":
     myui = Ui()
     
-    myui.settingsMenu.lift()
-    myui.settingsMenu.dropdown.createDropdown([1,2,3])
+    myui.gameOver.lift()
     
     myui.window.mainloop()
 

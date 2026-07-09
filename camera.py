@@ -15,23 +15,41 @@ def getCameraList():
 class Camera:
     def __init__(self, model_path, cam_index=0, interval=0.1):
         self.model = YOLO(model_path)
-        self.camindex = cam_index
+        self.camIndex = cam_index
         self.cap = None
         self.enabled = True
         self.interval = interval
         self.last_infer_time = 0
+
+        self.cameraList = getCameraList()
 
         self.last_annotated_frame = None
 
     def dont_get_stuck():
         cv2.waitKey(1)
 
-    def startCam(self, ):
-        self.cap = cv2.VideoCapture(self.camindex)
+    def setCamIndex(self, camName):
+        try:
+            self.camIndex = self.cameraList.index(camName)
+        except ValueError:
+            print("Camera not found in list:", camName)
 
+
+    def startCam(self ):
+        try:
+            self.cap = cv2.VideoCapture(self.camIndex)
+            
+        except:
+            print("Cant open camera")
+            print(self.camIndex)
 
     def read(self):
-        ret, frame = self.cap.read()
+        try:
+            ret, frame = self.cap.read()
+        except:
+            print('Cant operate Camera')
+            return
+        
         
         if not ret:
             return None
