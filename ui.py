@@ -388,7 +388,7 @@ class SettingsMenu(Frame):
             self, 
             fg = "yellow",
             bg = "#020810",
-            text = "100",
+            text = "50",
             font= ("Montserrat", 20, "bold"),
             padx = 10
         )
@@ -440,7 +440,7 @@ class SettingsMenu(Frame):
 
     
         self.volumebar.place(relx = 0.51, rely = 0.26, anchor="center")
-        self.volumebar.set(100)
+        self.volumebar.set(50)
 
         self.volumeLabel.place(relx= 0.89, rely= 0.27, anchor= "center")
         self.crossButton.place(relx = 0.925, rely =0.0835, anchor="center")
@@ -585,6 +585,7 @@ class App(Tk):
         super().__init__()
 
         self.geometry(f"{width}x{height}")
+        self.resizable(False, False)
         self.title(title)
 
         pepe=PhotoImage(file="assets/pepe.png")

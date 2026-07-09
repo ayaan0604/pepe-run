@@ -160,7 +160,7 @@ class Game:
         self.running = False
         self.hide_game_over()
         self.ui.mainMenu.show()
-        self.dj.stop()
+        self.dj.playMainMenuBgm()
     
     def hide_main_menu(self):
         self.ui.mainMenu.hide()

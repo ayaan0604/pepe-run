@@ -18,12 +18,18 @@ class DJ:
 
 
     def play_bgm(self):
+        self.mixer.music.stop()
         self.mixer.music.load("assets/sounds/game_bgm.mp3")
         self.mixer.music.play(-1)
 
     def play_gameover_music(self):
         self.mixer.music.stop()
         self.mixer.music.load("assets/sounds/gameover_bgm.mp3")
+        self.mixer.music.play(-1)
+
+    def playMainMenuBgm(self):
+        self.mixer.music.stop()
+        self.mixer.music.load("assets/sounds/main_menu.mp3")
         self.mixer.music.play(-1)
 
     def restart_bgm(self):
