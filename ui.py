@@ -138,6 +138,14 @@ class TopArea(Frame):
             bd = 5,
             bg = "black"
         )
+
+        self.highScoreLabel = Label(
+            self, 
+            text = "High Score: 0",
+            bg = "black",
+            fg = "#e3e3e3",
+            font = ("Georgia", 10, "bold")
+        )
         
 
         self.scoreLabel = Label(
@@ -157,8 +165,13 @@ class TopArea(Frame):
             font = ("Georgia", 15, "bold")
         ) 
 
-        self.scoreLabel.place(relx = 0, x= 10, rely = 0)
+
+        self.highScoreLabel.place(relx = 0, rely=0.2, x = 10)
+        self.scoreLabel.place(relx = 0.5, rely = 0.5, anchor="center")
         self.lifeLabel.place(relx = 1, rely = 0, x = -10, anchor = "ne")
+
+    def updateHighScore(self, score):
+        self.highScoreLabel.config(text= f"High Score: {score}")
     
     def update_score(self, score):
         self.scoreLabel.config(text = f"Score: {score}")

@@ -3,17 +3,20 @@ from collectibles import Collectible
 import random
 from camera import Camera
 from sound import DJ
+from saveManager import SavesManager
 
 
 class Game:
     def __init__(self):
         self.score = 0
+        self.highScore = 0
         self.speed = 100
         self.lives = 3
         self.running = True
         
         self.cam = Camera("saved_model.pt", 0)
         self.ui = Ui()
+        self.savesManager = SavesManager()
 
         self.current_collectible = None
 
@@ -81,6 +84,11 @@ class Game:
 
         self.ui.topArea.update_lives(self.lives)
 
+    def updateHighScore(self, score):
+        self.ui.topArea.updateHighScore(score=score)
+        self.highScore = score
+        
+
     def fall_collectible(self):
         
         if not self.running:
@@ -135,6 +143,9 @@ class Game:
             btn.config(state='disabled')
         self.dj.play_gameover_music()
 
+        if self.score > self.highScore:
+            self.updateHighScore(self.score)
+
     def handle_camera_inputs(self, labels):
         if not labels:
             return
@@ -188,6 +199,7 @@ class Game:
         self.operate_camera()
 
     def exit_game(self):
+        self.savesManager.updateHighScore(self.highScore)
         self.cam.release()
         self.ui.window.destroy()
 
@@ -197,6 +209,8 @@ class Game:
         self.collectibles = [Collectible(self.ui.playArea, text) for text in ['🍌','🍉','🍊','🍈','🍇']]
         self.bindControls()
         
+        self.highScore = self.savesManager.getHighScore()
+        self.updateHighScore(self.highScore)
 
         self.ui.window.protocol("WM_DELETE_WINDOW", self.exit_game )
        
