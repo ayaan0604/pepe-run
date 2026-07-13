@@ -1,5 +1,6 @@
-import cv2
+
 import mediapipe as mp
+import cv2
 import time
 
 def drawSkeleton(frame, hand):
@@ -161,8 +162,3 @@ def videoMode():
                 cap.release()
                 cv2.destroyAllWindows()
                 exit()    
-
-
-class GestureDetector:
-    def __init__(self):
-        pass

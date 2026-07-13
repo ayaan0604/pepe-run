@@ -2,6 +2,7 @@ import cv2
 import time
 from ultralytics import YOLO
 from pygrabber.dshow_graph import FilterGraph
+from vision_model import gesture
 
 
 def getCameraList():
@@ -13,17 +14,19 @@ def getCameraList():
 
 
 class Camera:
-    def __init__(self, model_path, cam_index=0, interval=0.1):
-        self.model = YOLO(model_path)
+    def __init__(self, model_path, cam_index=0, interval=0.3):
+        self.model = gesture.GestureDetector()
         self.camIndex = cam_index
         self.cap = None
         self.enabled = True
         self.interval = interval
         self.last_infer_time = 0
 
+
         self.cameraList = getCameraList()
 
-        self.last_annotated_frame = None
+        self.last_detected_hand = None
+        self.last_detection_time = 0
 
     def dont_get_stuck():
         cv2.waitKey(1)
@@ -48,41 +51,47 @@ class Camera:
             ret, frame = self.cap.read()
         except:
             print('Cant operate Camera')
-            return
+            return None, None
         
         
         if not ret:
-            return None
+            return None, None
 
         
 
         current_time = time.time()
-        analyzed = False
         labels = []
-        annotated_frame = None
 
         
         
+
         if current_time - self.last_infer_time >= self.interval:
-            results = self.model(frame, verbose=False)
 
-            annotated_frame = results[0].plot()
-            self.last_annotated_frame = annotated_frame
-
-            for box in results[0].boxes:
-                cls = int(box.cls[0])
-                labels.append(self.model.names[cls])
-
-            labels = list(set(labels))  # remove duplicates
-            self.last_infer_time = current_time
-            analyzed = True
-
+            result = self.model.get_landmarks(frame)
+            for hand in result.hand_landmarks:
+                labels = self.model.get_labels(hand)
+                self.last_detected_hand = hand
+                self.last_detection_time = current_time
         
+        time_since_last_detection = current_time - self.last_detection_time
+
+        if (self.last_detected_hand is not None) and time_since_last_detection <0.1:
+            return self.model.draw_skeleton(self.last_detected_hand,frame), labels
+
+        return frame, labels
         
+       
+        for hand in result.hand_landmarks:
+            labels = self.model.get_labels(hand)
+            annotated_frame = self.model.draw_skeleton(hand, frame)
+        return annotated_frame, labels
+        self.last_annotated_frame = annotated_frame
+        
+                    
+        self.last_infer_time = current_time
+            
 
 
-        
-        
         return {
             "frame": frame,
             "annotated_frame": self.last_annotated_frame,

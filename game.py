@@ -14,7 +14,7 @@ class Game:
         self.lives = 3
         self.running = True
         
-        self.cam = Camera("saved_model.pt", 0)
+        self.cam = Camera(0)
         self.cam.enabled = True
         self.ui = Ui()
         self.savesManager = SavesManager()
@@ -238,11 +238,11 @@ class Game:
             self.pepe.down()
             self.ui.bottomArea.cam.setText("down")
 
-        elif 'left' in labels:
+        elif 'right' in labels:
             self.pepe.right()
             self.ui.bottomArea.cam.setText("right")
 
-        elif 'right' in labels:
+        elif 'left' in labels:
             self.ui.bottomArea.cam.setText("left")
             self.pepe.left()
         
@@ -255,22 +255,21 @@ class Game:
         if not self.cam.enabled:
             return
         
-        result = self.cam.read()
-        if not result:
+        frame, label = self.cam.read()
+        if frame is None:
             self.ui.bottomArea.cam.imageLabel.config(text="Camera error\nPlease try any other camera")
             return
         
-
-        if result['analyzed']:
+        
             
-            self.handle_camera_inputs(result['labels'])
-            self.ui.bottomArea.cam.update_camera(frame=result['annotated_frame'])
-            
+        self.handle_camera_inputs(label)
 
+        self.ui.bottomArea.cam.update_camera(frame=frame)
 
-            
-        else:
-            self.ui.bottomArea.cam.update_camera(frame=result['frame'])
+        # if result['analyzed'] and (result['annotated_frame'] is not None):
+        #     self.ui.bottomArea.cam.update_camera(frame=result['annotated_frame'])
+        # else:
+        #     self.ui.bottomArea.cam.update_camera(frame=result['frame'])
 
         self.ui.window.after(33, self.operate_camera)
 
@@ -293,6 +292,7 @@ class Game:
         
         self.ui.window.after(100, self.spawn_collectible)
         self.ui.window.after(500, self.operate_camera)
+        
         self.dj.restart_bgm()
 
     def exit_game(self):
