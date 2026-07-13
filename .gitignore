@@ -1,4 +1,4 @@
-.gitignor
+.gitignore
 .venv
 model/runs/
 model/annotated images/

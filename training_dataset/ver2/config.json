@@ -1,0 +1,11 @@
+{
+    "num_features": 64,
+    "num_classes": 5,
+    "class_names": [
+        "down",
+        "left",
+        "none",
+        "right",
+        "up"
+    ]
+}

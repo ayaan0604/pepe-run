@@ -32,6 +32,67 @@ def drawSkeleton(frame, hand):
 
     return frame
 
+def staticMode():
+    model_path = "hand_landmarker.task"
+
+    BaseOptions = mp.tasks.BaseOptions
+    HandLandmarker = mp.tasks.vision.HandLandmarker
+    HandLandmarkerOptions = mp.tasks.vision.HandLandmarkerOptions
+    VisionRunningMode = mp.tasks.vision.RunningMode
+
+
+    # Create a hand landmarker instance with the video mode:
+    options = HandLandmarkerOptions(
+        base_options=BaseOptions(model_asset_path= model_path),
+        running_mode=VisionRunningMode.IMAGE,
+        num_hands = 2,
+        min_hand_detection_confidence = 0.7,
+        min_hand_presence_confidence = 0.5
+        )
+    with HandLandmarker.create_from_options(options) as landmarker:
+    # The landmarker is initialized. Use it here.
+    
+        cap = cv2.VideoCapture(0)
+
+
+        
+
+        # Loop through each frame in the video using VideoCapture#read()
+
+        while cap.isOpened():
+            
+            
+
+            res, frame = cap.read()
+
+            if not res:
+                continue
+            
+          
+
+
+            # Convert the frame received from OpenCV to a MediaPipe’s Image object.
+            mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+
+        
+            hand_landmarker_result = landmarker.detect(mp_image)
+
+
+            for hand in hand_landmarker_result.hand_landmarks:
+                for landmark in hand:
+                    x = int(landmark.x * frame.shape[1])
+                    y = int(landmark.y * frame.shape[0])
+
+                    cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)
+
+            cv2.imshow("Hands", cv2.flip(frame,1))
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                cap.release()
+                cv2.destroyAllWindows()
+                exit()
+            
+
 def videoMode():
 
         
