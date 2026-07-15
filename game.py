@@ -6,6 +6,8 @@ from sound import DJ
 from saveManager import SavesManager
 
 
+
+
 class Game:
     def __init__(self):
         self.score = 0
@@ -17,11 +19,20 @@ class Game:
         self.cam = Camera(0)
         self.cam.enabled = True
         self.ui = Ui()
+
+        self.pepe = self.ui.pepe
+        self.collectibles = [Collectible(self.ui.playArea, text) for text in ['🍌','🍉','🍊','🍈','🍇']]
+
         self.savesManager = SavesManager()
 
         self.current_collectible = None
 
         self.dj = DJ()
+
+        self.camera_job = None
+        self.collectible_job = None
+
+        
 
         
 
@@ -79,7 +90,11 @@ class Game:
     def destroy_collectible(self):
         self.current_collectible.destroy()
         self.current_collectible = None
-        self.ui.window.after(50,self.spawn_collectible)
+
+        if(self.collectible_job):
+            self.ui.window.after_cancel(self.collectible_job)
+
+        self.collectible_job = self.ui.window.after(50,self.spawn_collectible)
 
     def collison(self):
         if not self.current_collectible:
@@ -184,7 +199,13 @@ class Game:
     
         
         self.running=False
+
+        if self.collectible_job:
+            self.ui.window.after_cancel(self.collectible_job)
+            self.collectible_job = None
+
         self.ui.gameOver.show(self.score)
+
        
         for btn in self.ui.bottomArea.controlButtons.buttons_list:
             btn.config(state='disabled')
@@ -210,6 +231,12 @@ class Game:
 
     def disableCamera(self):
         self.cam.enabled = False
+        
+        if self.camera_job:
+            self.ui.window.after_cancel(self.camera_job)
+            self.camera_job = None
+
+
         self.ui.settingsMenu.setEnableButtonText("Enable Camera")
         self.ui.settingsMenu.dropdown.enableDropDown()
         self.ui.bottomArea.cam.disableCam()
@@ -271,7 +298,10 @@ class Game:
         # else:
         #     self.ui.bottomArea.cam.update_camera(frame=result['frame'])
 
-        self.ui.window.after(33, self.operate_camera)
+        if self.camera_job:
+            self.ui.window.after_cancel(self.camera_job)
+
+        self.camera_job = self.ui.window.after(33, self.operate_camera)
 
     def restart(self):
         
@@ -290,8 +320,16 @@ class Game:
         for btn in self.ui.bottomArea.controlButtons.buttons_list:
             btn.config(state='normal')
         
-        self.ui.window.after(100, self.spawn_collectible)
-        self.ui.window.after(500, self.operate_camera)
+        if self.camera_job:
+            self.ui.window.after_cancel(self.camera_job)
+
+        self.camera_job = self.ui.window.after(500, self.operate_camera)
+
+        if self.collectible_job:
+            self.ui.window.after_cancel(self.collectible_job)
+
+        self.collectible_job = self.ui.window.after(100, self.spawn_collectible)
+        
         
         self.dj.restart_bgm()
 
@@ -302,8 +340,7 @@ class Game:
 
     def setup(self):
         
-        self.pepe = self.ui.pepe
-        self.collectibles = [Collectible(self.ui.playArea, text) for text in ['🍌','🍉','🍊','🍈','🍇']]
+        
         self.bindControls()
         self.ui.bottomArea.cam.setText("")
         
