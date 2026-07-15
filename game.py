@@ -4,7 +4,7 @@ import random
 from camera import Camera
 from sound import DJ
 from saveManager import SavesManager
-
+import time
 
 
 
@@ -32,7 +32,8 @@ class Game:
         self.camera_job = None
         self.collectible_job = None
 
-        
+        self.last_camera_input_time = 0
+        self.camera_sensitivity = 50
 
         
 
@@ -255,6 +256,12 @@ class Game:
         if not labels:
             return
         
+        current_time = time.time() * 1000
+
+        if (current_time - self.last_camera_input_time) < self.camera_sensitivity:
+            return
+        
+        self.last_camera_input_time = current_time
         
         
         if 'up' in labels:
