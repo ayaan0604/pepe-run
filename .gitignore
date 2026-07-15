@@ -5,3 +5,4 @@ model/annotated images/
 model/datset/
 model/frames/
 model/raw footage/
+__pychache__
