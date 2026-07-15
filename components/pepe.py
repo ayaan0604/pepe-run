@@ -1,5 +1,5 @@
 from tkinter import PhotoImage, Label, RAISED
-from sound import DJ
+from components.sound import DJ
 
 
         

@@ -1,9 +1,9 @@
-from ui import Ui
-from collectibles import Collectible
+from components.ui import Ui
+from components.collectibles import Collectible
 import random
-from camera import Camera
-from sound import DJ
-from saveManager import SavesManager
+from components.camera import Camera
+from components.sound import DJ
+from components.saveManager import SavesManager
 import time
 
 

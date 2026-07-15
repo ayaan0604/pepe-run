@@ -53,18 +53,12 @@ class Camera:
             print('Cant operate Camera')
             return None, None
         
-        
         if not ret:
             return None, None
 
-        
-
         current_time = time.time()
         labels = []
-
         
-        
-
         if current_time - self.last_infer_time >= self.interval:
 
             result = self.model.get_landmarks(frame)
@@ -81,23 +75,6 @@ class Camera:
         return frame, labels
         
        
-        for hand in result.hand_landmarks:
-            labels = self.model.get_labels(hand)
-            annotated_frame = self.model.draw_skeleton(hand, frame)
-        return annotated_frame, labels
-        self.last_annotated_frame = annotated_frame
-        
-                    
-        self.last_infer_time = current_time
-            
-
-
-        return {
-            "frame": frame,
-            "annotated_frame": self.last_annotated_frame,
-            "labels": labels,
-            "analyzed": analyzed
-        }
 
     def release(self):
         if self.cap:

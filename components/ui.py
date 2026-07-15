@@ -1,9 +1,9 @@
 import random
 from tkinter import *
 from PIL import Image, ImageTk
-from pepe import Pepe
+from components.pepe import Pepe
 from cv2 import resize, cvtColor, COLOR_BGR2RGB, imread
-from tkinter import ttk
+
 
 class ImageLabel(Label):
     def __init__(self,parent,  location, width, height):
