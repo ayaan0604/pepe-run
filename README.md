@@ -5,9 +5,11 @@
 
 > **Engineering Focus:** Event-driven software architecture • Computer Vision • Machine Learning • Real-time systems • Modular application design
 
-![Gameplay GIF](docs/gameplay.gif)
+
 
 ---
+
+![Gameplay GIF](assets/docs/gameplay.gif)
 
 ## Overview
 
