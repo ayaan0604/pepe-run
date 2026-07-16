@@ -1,6 +1,5 @@
 import cv2
 import time
-from ultralytics import YOLO
 from pygrabber.dshow_graph import FilterGraph
 from vision_model import gesture
 
