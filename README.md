@@ -1,3 +1,10 @@
+![Python](https://img.shields.io/badge/Python-3.14-blue?logo=python)
+![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-red?logo=opencv)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-Tasks-orange)
+![PyTorch](https://img.shields.io/badge/PyTorch-ML-ee4c2c?logo=pytorch)
+![Tkinter](https://img.shields.io/badge/GUI-Tkinter-green)
+
+
 # Pepe Run
 
 > **A touch-free 2D game powered by Computer Vision and Machine Learning.**
@@ -8,7 +15,6 @@
 
 
 ---
-
 ![Gameplay GIF](assets/docs/gameplay.gif)
 
 ## Overview
@@ -181,6 +187,35 @@ This project demonstrates:
 
 ---
 
+# Architecture Diagram
+
+```
+                     +----------------+
+                     |    game.py     |
+                     +-------+--------+
+                             |
+       +---------------------+----------------------+
+       |            |            |          |        |
+       v            v            v          v        v
++-----------+ +-----------+ +---------+ +--------+ +----------+
+|    UI     | |  Camera   | |  Sound  | | Saves  | |   Pepe   |
++-----------+ +-----+-----+ +---------+ +--------+ +----------+
+                    |
+                    v
+          +--------------------+
+          | Gesture Detector   |
+          +---------+----------+
+                    |
+         +----------+-----------+
+         |                      |
+         v                      v
+   MediaPipe Hands      PyTorch Classifier
+```
+
+
+
+---
+
 # Future Improvements
 
 Some ideas for future development include:
@@ -261,3 +296,8 @@ Although the project began as a fun experiment, it gradually became an opportuni
 Pepe Run evolved from a simple GUI experiment into a project that continuously grew alongside my own learning journey. Rather than treating it as a one-time assignment, I repeatedly revisited it whenever I learned a new technology, replacing earlier implementations with better designs instead of starting over.
 
 The result is not only a playable game, but also a demonstration of my approach to engineering: build something functional, identify its limitations, learn the tools required to solve them, and iteratively improve the system while maintaining a working application.
+
+
+![Last Commit](https://img.shields.io/github/last-commit/ayaan0604/pepe-run)
+![Repo Size](https://img.shields.io/github/repo-size/ayaan0604/pepe-run)
+![Top Language](https://img.shields.io/github/languages/top/ayaan0604/pepe-run)
